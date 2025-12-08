@@ -19,25 +19,25 @@ filters:
   - templates/exam-typst/_filters/exam-auto-header.lua
 ---
 
-## Part 1: Multiple Choice `#pts([20])`{=typst}
+## Part 1: Multiple Choice {{pts:20}}
 
-Choose the best answer for each question. `#ptseach([4])`{=typst}
+Choose the best answer for each question. {{ptseach:4}}
 
-1. `#pts([4])`{=typst} What is the time complexity of searching in a balanced binary search tree?
+1. {{pts:4}} What is the time complexity of searching in a balanced binary search tree?
 
    a. O(n) \
    b. O(log n) ★ \
    c. O(n²) \
    d. O(1)
 
-2. `#pts([4])`{=typst} Which data structure uses LIFO (Last In, First Out) ordering?
+2. {{pts:4}} Which data structure uses LIFO (Last In, First Out) ordering?
 
    a. Queue \
    b. Stack ★ \
    c. Array \
    d. Linked List
 
-3. `#pts([4])`{=typst} What is the worst-case time complexity of QuickSort?
+3. {{pts:4}} What is the worst-case time complexity of QuickSort?
 
    a. O(n log n) \
    b. O(n) \
@@ -46,25 +46,25 @@ Choose the best answer for each question. `#ptseach([4])`{=typst}
 
 {{vf}}
 
-## Part 2: Short Answer `#pts([30])`{=typst}
+## Part 2: Short Answer {{pts:30}}
 
-Answer each question in 2-3 sentences. `#ptseach([10])`{=typst}
+Answer each question in 2-3 sentences. {{ptseach:10}}
 
-1. `#pts([10])`{=typst} Explain the difference between a stack and a queue.
-
-{{vf}}
-
-2. `#pts([10])`{=typst} What is a hash collision and how can it be resolved?
+1. {{pts:10}} Explain the difference between a stack and a queue.
 
 {{vf}}
 
-3. `#pts([10])`{=typst} Describe the purpose of a linked list and give one advantage over arrays.
+2. {{pts:10}} What is a hash collision and how can it be resolved?
+
+{{vf}}
+
+3. {{pts:10}} Describe the purpose of a linked list and give one advantage over arrays.
 
 {{vf}}
 
 {{pagebreak}}
 
-## Part 3: Code Analysis `#pts([25])`{=typst}
+## Part 3: Code Analysis {{pts:25}}
 
 Consider the following Python function:
 
@@ -78,21 +78,19 @@ def mystery(arr):
     return merge(left, right)
 ```
 
-1. `#pts([5])`{=typst} What sorting algorithm does this implement?
+1. {{pts:5}} What sorting algorithm does this implement?
 
    {{lblank}}
 
-1a. `#pts([2])`{=typst} The velocity is {{sblank}} m/s and the acceleration is {{ssblank}} m/s².
-
-2. `#pts([10])`{=typst} What is the time complexity? Explain your reasoning.
+2. {{pts:10}} What is the time complexity? Explain your reasoning.
 
 {{vf}}
 
-3. `#pts([10])`{=typst} What is the space complexity?
+3. {{pts:10}} What is the space complexity?
 
 {{vf}}
 
-## Part 4: Implementation `#pts([25])`{=typst}
+## Part 4: Implementation {{pts:25}}
 
 Implement a function that reverses a singly linked list in-place.
 
@@ -116,21 +114,21 @@ def reverse_list(head):
 
 {{pagebreak}}
 
-## Part 5: Quick Calculations `#pts([15])`{=typst}
+## Part 5: Quick Calculations {{pts:15}}
 
 {{begin-narrow}}
 
 Answer the following in the space provided to the right.
 
-1. `#pts([5])`{=typst} Calculate: 42 × 17
+1. {{pts:5}} Calculate: 42 × 17
 
 {{vf}}
 
-2. `#pts([5])`{=typst} Solve for x: 3x - 7 = 14
+2. {{pts:5}} Solve for x: 3x - 7 = 14
 
 {{vf}}
 
-3. `#pts([5])`{=typst} Find the perimeter of a square with side length 8cm
+3. {{pts:5}} Find the perimeter of a square with side length 8cm
 
 {{vf}}
 

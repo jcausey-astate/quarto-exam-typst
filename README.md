@@ -39,63 +39,88 @@ filters:
 ---
 ```
 
-2. Write your exam content directly - the header is generated automatically:
+2. Write your exam content using shortcode syntax:
 
 ```markdown
-## Question 1 `#pts([10])`{=typst}
+## Question 1 {{pts:10}}
 
-Write your question here. `#ptseach([5])`{=typst}
+Write your question here. {{ptseach:5}}
 
 1. Part a
 2. Part b
 
-`#vf()`{=typst}
+{{vf}}
 ```
 
-## Available Functions
+## Available Shortcodes
 
-### Shorthand Syntax (Automatic Conversion via Lua Filter)
+The template includes a Lua filter that provides convenient shortcode syntax for common exam elements. All shortcodes use the `{{keyword}}` or `{{keyword:parameter}}` format.
 
-The included Lua filter automatically converts shorthand `{{keyword}}` syntax to full Typst code. This makes exam files cleaner and easier to read:
+### Parameterized Shortcodes
+
+**Point Values:**
+
+- `{{pts:N}}` - Displays point value (e.g., `{{pts:10}}` renders as "(10 pts)")
+- `{{ptseach:N}}` - Displays point value per item (e.g., `{{ptseach:5}}` renders as "(5 pts each)")
+
+**Examples:**
+
+```markdown
+## Part 1: Multiple Choice {{pts:20}}
+
+Choose the best answer. {{ptseach:4}}
+
+1. {{pts:4}} What is the time complexity of binary search?
+```
+
+### Simple Shortcodes (No Parameters)
 
 **Spacing & Page Breaks:**
 
-- `{{vf}}` → `` `#vf()`{=typst} `` (vertical fill)
-- `{{pagebreak}}` → `` `#pagebreak()`{=typst} ``
+- `{{vf}}` - Vertical fill (expands to fill available space)
+- `{{pagebreak}}` - Page break
 
-**Answer Blanks:**
+**Answer Blanks** (render inline with text):
 
-- `{{sblank}}` → `` `#sblank()`{=typst} `` (short blank line)
-- `{{lblank}}` → `` `#lblank()`{=typst} `` (long blank line)
-- `{{blank}}` → `` `#blank()`{=typst} `` (small blank with question mark)
-- `{{ssblank}}` → `` `#ssblank()`{=typst} ``
+- `{{sblank}}` - Small blank line (1.5em): ___
+- `{{ssblank}}` - Super small blank with "?" (0.5em ? 0.5em): _?_
+- `{{lblank}}` - Large blank line (10em): __________
+- `{{blank}}` - Alias for `{{ssblank}}`
+
+**Inline blank usage example:**
+
+```markdown
+The velocity is {{sblank}} m/s and the temperature is {{ssblank}} degrees.
+```
+
+This renders as: "The velocity is ___ m/s and the temperature is _?_ degrees."
 
 **Layout Modes:**
 
-- `{{begin-narrow}}` ... `{{end-narrow}}` → `` `#narrow([`{=typst} `` ... `` `])`{=typst} ``
-- `{{begin-wide}}` ... `{{end-wide}}` → `` `#wide([`{=typst} `` ... `` `])`{=typst} ``
+- `{{begin-narrow}}` ... `{{end-narrow}}` - Narrow layout with right column blank for handwritten answers
+- `{{begin-wide}}` ... `{{end-wide}}` - Full-width layout
 
-**Example:**
+**Layout example:**
 
 ```markdown
-1. A question.
+{{begin-narrow}}
+
+Answer the following in the space provided to the right.
+
+1. {{pts:5}} Calculate: 42 × 17
 
 {{vf}}
 
-2. A fill-in question: The answer is {{sblank}}.
+2. {{pts:5}} Solve for x: 3x - 7 = 14
 
-{{pagebreak}}
+{{vf}}
 
-3. A narrow layout question:
-
-{{begin-narrow}}
-Content constrained to left column
 {{end-narrow}}
 ```
 
-### Full Typst Syntax (Alternative)
+### Alternative: Direct Typst Syntax
 
-If you prefer explicit Typst syntax, use the backtick-wrapped versions directly:
+If you prefer explicit Typst syntax, you can still use the backtick-wrapped format:
 
 **Point Values:**
 - `` `#pts([N])`{=typst} `` - Adds a superscript point value (e.g., "(10 pt.)")
@@ -155,23 +180,24 @@ This will generate a PDF file with your exam.
 
 ## Migration from LaTeX Template
 
-If you're migrating from the LaTeX template:
+If you're migrating from the LaTeX template, use these shortcode equivalents:
 
-| LaTeX Command | Typst Equivalent |
-|---------------|------------------|
-| `\pts{N}` | `` `#pts([N])`{=typst} `` |
-| `\ptseach{N}` | `` `#ptseach([N])`{=typst} `` |
-| `\blank` | `` `#blank()`{=typst} `` |
-| `\sblank` | `` `#sblank()`{=typst} `` |
-| `\lblank` | `` `#lblank()`{=typst} `` |
-| `\vf` | `` `#vf()`{=typst} `` |
-| `\pagebreak` | `` `#pagebreak()`{=typst} `` |
-| `\wide` | `` `#wide([content])`{=typst} `` |
-| `\narrow` | `` `#narrow([content])`{=typst} `` |
+| LaTeX Command | Recommended Shortcode | Alternative Typst Syntax |
+|---------------|----------------------|--------------------------|
+| `\pts{N}` | `{{pts:N}}` | `` `#pts([N])`{=typst} `` |
+| `\ptseach{N}` | `{{ptseach:N}}` | `` `#ptseach([N])`{=typst} `` |
+| `\blank` | `{{blank}}` or `{{ssblank}}` | `` `#blank()`{=typst} `` |
+| `\sblank` | `{{sblank}}` | `` `#sblank()`{=typst} `` |
+| `\lblank` | `{{lblank}}` | `` `#lblank()`{=typst} `` |
+| `\vf` | `{{vf}}` | `` `#vf()`{=typst} `` |
+| `\pagebreak` | `{{pagebreak}}` | `` `#pagebreak()`{=typst} `` |
+| `\wide` | `{{begin-wide}}` ... `{{end-wide}}` | `` `#wide([content])`{=typst} `` |
+| `\narrow` | `{{begin-narrow}}` ... `{{end-narrow}}` | `` `#narrow([content])`{=typst} `` |
 
 ### Notes on Migration
 
-- **Functions**: All custom functions must be called using `` `#function()`{=typst} `` syntax
+- **Shortcodes**: The new shortcode syntax (`{{keyword}}` and `{{keyword:N}}`) is cleaner and easier to read than the verbose Typst syntax
+- **Inline Blanks**: Blank shortcodes now render properly inline with text (this was fixed to match LaTeX behavior)
 - **Unicode**: Typst has excellent built-in Unicode support, so no special setup is needed for symbols and emoji
 - **Code Highlighting**: Quarto handles syntax highlighting automatically for code blocks
 

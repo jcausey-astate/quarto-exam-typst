@@ -22,35 +22,75 @@ end
 
 -- Process Str elements (plain text) - this is where inline text gets processed
 function Str(elem)
-  -- Check if this string contains any shorthand
-  for shorthand, typst_code in pairs(shorthand_map) do
-    if elem.text:find(escape_pattern(shorthand), 1, true) then
-      -- Split the text around the shorthand and create a list of inlines
-      local result = {}
-      local remaining = elem.text
+  -- First check for parameterized shortcodes (pts:N and ptseach:N)
+  -- Pattern matches {{pts:NUMBER}} or {{ptseach:NUMBER}}
+  local text = elem.text
+  local result = {}
+  local pos = 1
 
-      while remaining ~= "" do
-        local start_pos, end_pos = remaining:find(escape_pattern(shorthand), 1, true)
-        if start_pos then
-          -- Add text before the shorthand
-          if start_pos > 1 then
-            table.insert(result, pandoc.Str(remaining:sub(1, start_pos - 1)))
-          end
-          -- Add the Typst code as inline raw
+  while pos <= #text do
+    -- Try to match {{pts:N}} or {{ptseach:N}}
+    local start_pos, end_pos, cmd, param = text:find("{{(pts):(%d+)}}", pos)
+    if not start_pos then
+      start_pos, end_pos, cmd, param = text:find("{{(ptseach):(%d+)}}", pos)
+    end
+
+    if start_pos then
+      -- Add text before the shortcode
+      if start_pos > pos then
+        table.insert(result, pandoc.Str(text:sub(pos, start_pos - 1)))
+      end
+      -- Add the Typst code with parameter
+      local typst_code = string.format("#%s([%s])", cmd, param)
+      table.insert(result, pandoc.RawInline("typst", typst_code))
+      pos = end_pos + 1
+    else
+      -- No more parameterized shortcodes, check for simple shortcodes
+      local found = false
+      for shorthand, typst_code in pairs(shorthand_map) do
+        local sh_start, sh_end = text:find(escape_pattern(shorthand), pos, true)
+        if sh_start and sh_start == pos then
+          -- Found a simple shortcode at current position
           table.insert(result, pandoc.RawInline("typst", typst_code))
-          -- Continue with remaining text
-          remaining = remaining:sub(end_pos + 1)
-        else
-          -- No more shorthands, add remaining text
-          if remaining ~= "" then
-            table.insert(result, pandoc.Str(remaining))
-          end
+          pos = sh_end + 1
+          found = true
           break
         end
       end
 
-      return result
+      if not found then
+        -- No shortcode at current position, move forward character by character
+        -- until we find a shortcode or reach the end
+        local next_shortcode = #text + 1
+
+        -- Check for parameterized shortcodes
+        local p_start = text:find("{{pts:%d+}}", pos)
+        if p_start and p_start < next_shortcode then
+          next_shortcode = p_start
+        end
+        p_start = text:find("{{ptseach:%d+}}", pos)
+        if p_start and p_start < next_shortcode then
+          next_shortcode = p_start
+        end
+
+        -- Check for simple shortcodes
+        for shorthand, _ in pairs(shorthand_map) do
+          local sh_start = text:find(escape_pattern(shorthand), pos, true)
+          if sh_start and sh_start < next_shortcode then
+            next_shortcode = sh_start
+          end
+        end
+
+        -- Add text up to next shortcode (or end of string)
+        table.insert(result, pandoc.Str(text:sub(pos, next_shortcode - 1)))
+        pos = next_shortcode
+      end
     end
+  end
+
+  -- If we found any shortcodes, return the result list
+  if #result > 0 then
+    return result
   end
 
   return elem
