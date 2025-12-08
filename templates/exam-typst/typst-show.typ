@@ -72,29 +72,24 @@
   }
 
   // Code blocks (raw blocks) should respect narrow/wide mode
-  // Override Quarto's default width: 100% setting
+  // Override Quarto's default styling (which sets width: 100%, fill: luma(230))
   show raw.where(block: true): it => {
+    set block(
+      fill: luma(245),
+      inset: 8pt,
+      radius: 2pt
+    )
     context {
       let mode = exam-question-width-state.get()
       let force_wide = force-wide-state.get()
       if mode == "narrow" and not force_wide {
-        // In narrow mode, constrain the block background but allow content to overflow if needed
-        block(
-          width: 2.37in,
-          fill: luma(230),
-          inset: 8pt,
-          radius: 2pt,
-          it
-        )
+        // In narrow mode, constrain the block width
+        set block(width: 2.37in)
+        it
       } else {
-        // In wide mode, use full width with grey background
-        block(
-          width: 100%,
-          fill: luma(230),
-          inset: 8pt,
-          radius: 2pt,
-          it
-        )
+        // In wide mode, use full width
+        set block(width: 100%)
+        it
       }
     }
   }
