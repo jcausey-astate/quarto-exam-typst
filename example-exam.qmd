@@ -117,11 +117,11 @@ def reverse_list(head):
 
 ## Part 5: Quick Calculations {{pts:15}}
 
-{{begin-narrow}}
+{{begin-wide}}
 
 Answer the following in the space provided to the right.
 
-1. {{pts:5}} Calculate: 42 × 17
+1. {{pts:5}} Calculate: 42 × 17 and give the answer below.  This is a long question.
 
 {{vf}}
 
@@ -133,4 +133,4 @@ Answer the following in the space provided to the right.
 
 {{vf}}
 
-{{end-narrow}}
+{{end-wide}}

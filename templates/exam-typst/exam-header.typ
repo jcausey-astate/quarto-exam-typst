@@ -1,6 +1,9 @@
 // Exam header generator
 // Usage: #exam-header(title: "My Exam", subtitle: "Spring 2025", ...)
 
+// Import the force-wide-state from typst-template.typ
+#import "typst-template.typ": force-wide-state
+
 #let exam-header(
   title: none,
   subtitle: none,
@@ -37,14 +40,17 @@
 
   v(0.1in)
 
-  // Instructions
+  // Instructions (always render in full width, regardless of exam-question-width)
   if not noinstructions {
     let instr = if instructions != none {
       instructions
     } else {
       [Read each question carefully and fully before answering. Answer all questions using complete sentences unless the question specifies otherwise. Explain your thoughts and provide any necessary context; supporting examples, code, formulas, etc. are encouraged. Clearly state any additional assumptions you make in forming your responses; always be as specific as possible.]
     }
+    // Use force-wide state to override narrow mode constraints
+    force-wide-state.update(true)
     emph(instr)
+    force-wide-state.update(false)
   }
 
   v(0.2in)

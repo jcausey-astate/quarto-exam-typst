@@ -30,6 +30,9 @@
 // State variable to track the default question width mode
 #let exam-question-width-state = state("exam-question-width", "wide")
 
+// State variable to track when we're in a force-wide context (like instructions)
+#let force-wide-state = state("force-wide", false)
+
 // Layout modes for answer space
 // These functions now work by adjusting the width of content blocks
 // The default width is controlled by the exam-question-width-state
@@ -40,12 +43,10 @@
     let mode = exam-question-width-state.get()
     if mode == "narrow" {
       // In narrow-default mode, "wide" blocks need to override the narrow show rules
-      // We do this by temporarily showing elements without width constraints
-      show par: it => it
-      show heading: it => it
-      show enum: it => it
-      show list: it => it
+      // Use force-wide-state to signal that content should be full width
+      force-wide-state.update(true)
       content
+      force-wide-state.update(false)
     } else {
       // In wide-default mode, content is already wide (no wrapping needed)
       content

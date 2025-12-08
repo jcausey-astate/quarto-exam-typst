@@ -26,7 +26,8 @@
   show par: it => {
     context {
       let mode = exam-question-width-state.get()
-      if mode == "narrow" {
+      let force_wide = force-wide-state.get()
+      if mode == "narrow" and not force_wide {
         block(width: 2.37in, it)
       } else {
         it
@@ -37,7 +38,8 @@
   show heading: it => {
     context {
       let mode = exam-question-width-state.get()
-      if mode == "narrow" {
+      let force_wide = force-wide-state.get()
+      if mode == "narrow" and not force_wide {
         block(width: 2.37in, it)
       } else {
         it
@@ -48,7 +50,8 @@
   show enum: it => {
     context {
       let mode = exam-question-width-state.get()
-      if mode == "narrow" {
+      let force_wide = force-wide-state.get()
+      if mode == "narrow" and not force_wide {
         block(width: 2.37in, it)
       } else {
         it
@@ -59,10 +62,39 @@
   show list: it => {
     context {
       let mode = exam-question-width-state.get()
-      if mode == "narrow" {
+      let force_wide = force-wide-state.get()
+      if mode == "narrow" and not force_wide {
         block(width: 2.37in, it)
       } else {
         it
+      }
+    }
+  }
+
+  // Code blocks (raw blocks) should respect narrow/wide mode
+  // Override Quarto's default width: 100% setting
+  show raw.where(block: true): it => {
+    context {
+      let mode = exam-question-width-state.get()
+      let force_wide = force-wide-state.get()
+      if mode == "narrow" and not force_wide {
+        // In narrow mode, constrain the block background but allow content to overflow if needed
+        block(
+          width: 2.37in,
+          fill: luma(230),
+          inset: 8pt,
+          radius: 2pt,
+          it
+        )
+      } else {
+        // In wide mode, use full width with grey background
+        block(
+          width: 100%,
+          fill: luma(230),
+          inset: 8pt,
+          radius: 2pt,
+          it
+        )
       }
     }
   }
