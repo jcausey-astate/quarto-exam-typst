@@ -1,0 +1,12 @@
+title: Quarto Exam Template
+author: "Exam Template Contributors"
+version: 1.0.0
+quarto-min-required: 1.3.0
+
+filters:
+  - quarto
+
+resources:
+  - exam-header.typ
+  - typst-template.typ
+  - typst-show.typ

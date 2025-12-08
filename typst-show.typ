@@ -1,5 +1,5 @@
-// Override Quarto's default article template
-// This replaces the article() wrapper with proper exam formatting
+// Exam Template - Document formatting
+// This applies document-wide settings
 
 #show: doc => {
   // Remove page numbering
