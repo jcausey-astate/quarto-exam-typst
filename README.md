@@ -4,10 +4,10 @@ This is a Quarto typst template for creating exam papers, converted from the ori
 
 ## Files
 
-- `typst-template.typ` - Helper functions for exams (points, blanks, vertical fill)
-- `typst-show.typ` - Document formatting (no page numbers, heading styles)
-- `exam-header.typ` - Exam header generator (title, subtitle, name field, instructions)
-- `_filters/auto-exam-header.lua` - Lua filter that auto-generates exam header from YAML metadata
+- `templates/exam-typst/typst-template.typ` - Helper functions for exams (points, blanks, vertical fill)
+- `templates/exam-typst/typst-show.typ` - Document formatting (no page numbers, heading styles)
+- `templates/exam-typst/exam-header.typ` - Exam header generator (title, subtitle, name field, instructions)
+- `templates/exam-typst/_filters/exam-auto-header.lua` - Lua filter that auto-generates exam header from YAML metadata
 - `example-exam.qmd` - Example exam demonstrating all features
 
 ## Quick Start
@@ -32,10 +32,10 @@ format:
     fontsize: 10pt
     keep-typ: false
     template-partials:
-      - typst-template.typ
-      - typst-show.typ
+      - templates/exam-typst/typst-template.typ
+      - templates/exam-typst/typst-show.typ
 filters:
-  - _filters/auto-exam-header.lua
+  - templates/exam-typst/_filters/exam-auto-header.lua
 ---
 ```
 
@@ -136,9 +136,9 @@ If you're migrating from the LaTeX template:
 
 You can customize the appearance by:
 
-1. Modifying `typst-template.typ` to change helper functions
-2. Modifying `typst-show.typ` to change document-wide formatting
-3. Modifying `exam-header.typ` to change header appearance
+1. Modifying `templates/exam-typst/typst-template.typ` to change helper functions
+2. Modifying `templates/exam-typst/typst-show.typ` to change document-wide formatting
+3. Modifying `templates/exam-typst/exam-header.typ` to change header appearance
 4. Adjusting margins and fonts in the YAML frontmatter
 
 ## Known Limitations

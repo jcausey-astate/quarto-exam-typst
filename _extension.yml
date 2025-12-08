@@ -7,6 +7,7 @@ filters:
   - quarto
 
 resources:
-  - exam-header.typ
-  - typst-template.typ
-  - typst-show.typ
+  - templates/exam-typst/exam-header.typ
+  - templates/exam-typst/typst-template.typ
+  - templates/exam-typst/typst-show.typ
+  - templates/exam-typst/_filters/exam-auto-header.lua

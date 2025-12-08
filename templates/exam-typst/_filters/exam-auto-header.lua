@@ -34,7 +34,7 @@ function Pandoc(doc)
   end
 
   -- Create the exam header Typst code
-  local header_code = string.format([[#import "exam-header.typ": exam-header
+  local header_code = string.format([[#import "templates/exam-typst/exam-header.typ": exam-header
 #exam-header(
   title: "%s",
   subtitle: "%s",

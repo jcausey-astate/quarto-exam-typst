@@ -13,10 +13,10 @@ format:
       y: 2cm
     fontsize: 10pt
     template-partials:
-      - typst-template.typ
-      - typst-show.typ
+      - templates/exam-typst/typst-template.typ
+      - templates/exam-typst/typst-show.typ
 filters:
-  - _filters/auto-exam-header.lua
+  - templates/exam-typst/_filters/exam-auto-header.lua
 ---
 
 ## Part 1: Multiple Choice `#pts([20])`{=typst}
