@@ -42,11 +42,17 @@
 // Vertical fill - useful for spacing
 #let vf() = v(1fr)
 
-// Wide and narrow environments
+// Layout modes for answer space
+// Wide mode: content spans full page width
 #let wide(content) = {
   block(width: 100%, content)
 }
 
+// Narrow mode: content constrained to left column, right column blank for handwritten answers
+// Default answer width is 2.37in (matching LaTeX template)
 #let narrow(answerwidth: 2.37in, content) = {
-  block(width: 100% - answerwidth, content)
+  block(
+    width: 100% - answerwidth,
+    content
+  )
 }

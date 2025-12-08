@@ -125,3 +125,25 @@ def reverse_list(head):
 
 `#vf()`{=typst}
 `#vf()`{=typst}
+
+`#pagebreak()`{=typst}
+
+## Part 5: Quick Calculations `#pts([15])`{=typst}
+
+`#narrow([`{=typst}
+
+Answer the following in the space provided to the right.
+
+1. `#pts([5])`{=typst} Calculate: 42 × 17
+
+`#vf()`{=typst}
+
+2. `#pts([5])`{=typst} Solve for x: 3x - 7 = 14
+
+`#vf()`{=typst}
+
+3. `#pts([5])`{=typst} Find the perimeter of a square with side length 8cm
+
+`#vf()`{=typst}
+
+`])`{=typst}
