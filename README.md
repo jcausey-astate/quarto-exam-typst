@@ -70,10 +70,10 @@ Write your question here. `#ptseach([5])`{=typst}
 
 ### Layout Modes
 - `` `#wide([content])`{=typst} `` - Full-width layout (default)
-- `` `#narrow([content])`{=typst} `` - Narrow layout with right column blank for handwritten answers
-- `` `#narrow(answerwidth: 3in, [content])`{=typst} `` - Custom answer column width (default: 2.37in)
+- `` `#narrow([content])`{=typst} `` - Narrow layout with right column blank for handwritten answers (default left column width: 2.37in)
+- `` `#narrow(columnwidth: 3in, [content])`{=typst} `` - Custom left column width
 
-The narrow mode constrains content to the left side of the page, leaving the right side blank for students to write answers. Content can naturally overflow into the answer area if needed (e.g., wide figures).
+The narrow mode constrains content to the left column, leaving the right side blank for students to write answers. Content can naturally overflow into the answer area if needed (e.g., wide figures).
 
 ## Exam Header Options
 

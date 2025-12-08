@@ -49,10 +49,10 @@
 }
 
 // Narrow mode: content constrained to left column, right column blank for handwritten answers
-// Default answer width is 2.37in (matching LaTeX template)
-#let narrow(answerwidth: 2.37in, content) = {
+// Default left column width is 2.37in (matching LaTeX template)
+#let narrow(columnwidth: 2.37in, content) = {
   block(
-    width: 100% - answerwidth,
+    width: columnwidth,
     content
   )
 }
