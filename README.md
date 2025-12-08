@@ -100,7 +100,12 @@ This renders as: "The velocity is ___ m/s and the temperature is _?_ degrees."
 - `{{begin-narrow}}` ... `{{end-narrow}}` - Narrow layout with right column blank for handwritten answers
 - `{{begin-wide}}` ... `{{end-wide}}` - Full-width layout
 
-**Layout example:**
+The behavior of these layout blocks depends on the `exam-question-width` parameter:
+
+- **When `exam-question-width: wide` (default):** The page defaults to full width. Use `{{begin-narrow}}...{{end-narrow}}` blocks to create constrained sections for handwritten answers.
+- **When `exam-question-width: narrow`:** The page defaults to narrow width (left column only). Use `{{begin-wide}}...{{end-wide}}` blocks to create full-width sections for diagrams, tables, or questions needing more space.
+
+**Layout example (wide mode - default):**
 
 ```markdown
 {{begin-narrow}}
@@ -116,6 +121,28 @@ Answer the following in the space provided to the right.
 {{vf}}
 
 {{end-narrow}}
+```
+
+**Layout example (narrow mode):**
+
+```markdown
+---
+exam-question-width: narrow
+---
+
+This content appears in narrow mode by default.
+
+1. {{pts:5}} Calculate: 42 × 17
+
+{{vf}}
+
+{{begin-wide}}
+
+This section expands to full width for a diagram or table.
+
+{{end-wide}}
+
+Back to narrow mode for more questions.
 ```
 
 ### Alternative: Direct Typst Syntax
@@ -153,6 +180,7 @@ Configure the exam header using these YAML frontmatter variables:
 - `exam-subtitlesize` - Subtitle font size (default: 14pt)
 - `exam-noname` - Hide the name field (default: false)
 - `exam-noinstructions` - Hide the instructions (default: false)
+- `exam-question-width` - Default question width mode: "wide" or "narrow" (default: "wide")
 
 Example:
 ```yaml
@@ -162,6 +190,7 @@ exam-noname: false
 exam-noinstructions: false
 exam-titlesize: 20pt
 exam-subtitlesize: 14pt
+exam-question-width: narrow
 ```
 
 ## Example

@@ -5,6 +5,7 @@ exam-noname: false
 exam-noinstructions: false
 exam-titlesize: 14pt
 exam-subtitlesize: 12pt
+exam-question-width: narrow
 format:
   typst:
     papersize: us-letter
@@ -12,7 +13,6 @@ format:
       x: 2cm
       y: 2cm
     fontsize: 10pt
-    keep-typ: true
     template-partials:
       - templates/exam-typst/typst-template.typ
       - templates/exam-typst/typst-show.typ

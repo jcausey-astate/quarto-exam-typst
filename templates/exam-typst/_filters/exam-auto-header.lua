@@ -1,8 +1,8 @@
 -- Auto-generate exam header from YAML metadata
 -- Also provides shorthand syntax for common Typst exam functions
 
--- Mapping of shorthand syntax to Typst code
-local shorthand_map = {
+-- Default mapping of shorthand syntax to Typst code (when exam-question-width is "wide" or unset)
+local default_shorthand_map = {
   ["{{vf}}"] = "#vf()",
   ["{{sblank}}"] = "#sblank()",
   ["{{blank}}"] = "#blank()",
@@ -14,6 +14,9 @@ local shorthand_map = {
   ["{{begin-wide}}"] = "#wide([",
   ["{{end-wide}}"] = "])",
 }
+
+-- This will be set based on exam-question-width parameter
+local shorthand_map = default_shorthand_map
 
 -- Escape special characters for pattern matching
 local function escape_pattern(text)
@@ -129,6 +132,7 @@ function Pandoc(doc)
   local exam_noinstructions_str = "false"
   local exam_titlesize = "20pt"
   local exam_subtitlesize = "14pt"
+  local exam_question_width = "wide"  -- default to wide for backwards compatibility
 
   if doc.meta.title then
     title = pandoc.utils.stringify(doc.meta.title)
@@ -154,6 +158,17 @@ function Pandoc(doc)
     exam_subtitlesize = pandoc.utils.stringify(doc.meta["exam-subtitlesize"])
   end
 
+  if doc.meta["exam-question-width"] then
+    exam_question_width = pandoc.utils.stringify(doc.meta["exam-question-width"]):lower()
+  end
+
+  -- The shorthand_map is always the same now - the Typst functions handle mode logic
+  shorthand_map = default_shorthand_map
+
+  -- Create code to set the exam-question-width state
+  local state_code = string.format([[#exam-question-width-state.update("%s")
+]], exam_question_width)
+
   -- Create the exam header Typst code
   local header_code = string.format([[#import "templates/exam-typst/exam-header.typ": exam-header
 #exam-header(
@@ -172,11 +187,15 @@ function Pandoc(doc)
     exam_noinstructions_str
   )
 
-  -- Create a RawBlock of typst code
+  -- Create RawBlocks
+  local state_block = pandoc.RawBlock("typst", state_code)
   local header_block = pandoc.RawBlock("typst", header_code)
 
   -- Insert at beginning of document
   table.insert(doc.blocks, 1, header_block)
+  table.insert(doc.blocks, 1, state_block)  -- state must come before header
+
+  -- No need to wrap the document - the show rules in typst-show.typ handle it
 
   return doc
 end

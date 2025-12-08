@@ -21,5 +21,51 @@
   // Heading setup (no numbering)
   set heading(numbering: none)
 
+  // Apply default width constraint for narrow mode using show rules
+  // This allows pagebreaks to work since we're not wrapping in blocks
+  show par: it => {
+    context {
+      let mode = exam-question-width-state.get()
+      if mode == "narrow" {
+        block(width: 2.37in, it)
+      } else {
+        it
+      }
+    }
+  }
+
+  show heading: it => {
+    context {
+      let mode = exam-question-width-state.get()
+      if mode == "narrow" {
+        block(width: 2.37in, it)
+      } else {
+        it
+      }
+    }
+  }
+
+  show enum: it => {
+    context {
+      let mode = exam-question-width-state.get()
+      if mode == "narrow" {
+        block(width: 2.37in, it)
+      } else {
+        it
+      }
+    }
+  }
+
+  show list: it => {
+    context {
+      let mode = exam-question-width-state.get()
+      if mode == "narrow" {
+        block(width: 2.37in, it)
+      } else {
+        it
+      }
+    }
+  }
+
   doc
 }
