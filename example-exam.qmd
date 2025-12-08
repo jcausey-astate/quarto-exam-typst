@@ -44,7 +44,7 @@ Choose the best answer for each question. `#ptseach([4])`{=typst}
    c. O(n²) ★ \
    d. O(log n)
 
-`#vf()`{=typst}
+{{vf}}
 
 ## Part 2: Short Answer `#pts([30])`{=typst}
 
@@ -52,17 +52,17 @@ Answer each question in 2-3 sentences. `#ptseach([10])`{=typst}
 
 1. `#pts([10])`{=typst} Explain the difference between a stack and a queue.
 
-`#vf()`{=typst}
+{{vf}}
 
 2. `#pts([10])`{=typst} What is a hash collision and how can it be resolved?
 
-`#vf()`{=typst}
+{{vf}}
 
 3. `#pts([10])`{=typst} Describe the purpose of a linked list and give one advantage over arrays.
 
-`#vf()`{=typst}
+{{vf}}
 
-`#pagebreak()`{=typst}
+{{pagebreak}}
 
 ## Part 3: Code Analysis `#pts([25])`{=typst}
 
@@ -80,15 +80,15 @@ def mystery(arr):
 
 1. `#pts([5])`{=typst} What sorting algorithm does this implement?
 
-   `#lblank()`{=typst}
+   {{lblank}}
 
 2. `#pts([10])`{=typst} What is the time complexity? Explain your reasoning.
 
-`#vf()`{=typst}
+{{vf}}
 
 3. `#pts([10])`{=typst} What is the space complexity?
 
-`#vf()`{=typst}
+{{vf}}
 
 ## Part 4: Implementation `#pts([25])`{=typst}
 
@@ -109,27 +109,27 @@ def reverse_list(head):
     pass
 ```
 
-`#vf()`{=typst}
-`#vf()`{=typst}
+{{vf}}
+{{vf}}
 
-`#pagebreak()`{=typst}
+{{pagebreak}}
 
 ## Part 5: Quick Calculations `#pts([15])`{=typst}
 
-`#narrow([`{=typst}
+{{begin-narrow}}
 
 Answer the following in the space provided to the right.
 
 1. `#pts([5])`{=typst} Calculate: 42 × 17
 
-`#vf()`{=typst}
+{{vf}}
 
 2. `#pts([5])`{=typst} Solve for x: 3x - 7 = 14
 
-`#vf()`{=typst}
+{{vf}}
 
 3. `#pts([5])`{=typst} Find the perimeter of a square with side length 8cm
 
-`#vf()`{=typst}
+{{vf}}
 
-`])`{=typst}
+{{end-narrow}}

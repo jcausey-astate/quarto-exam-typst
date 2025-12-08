@@ -54,21 +54,64 @@ Write your question here. `#ptseach([5])`{=typst}
 
 ## Available Functions
 
-### Point Values
+### Shorthand Syntax (Automatic Conversion via Lua Filter)
+
+The included Lua filter automatically converts shorthand `{{keyword}}` syntax to full Typst code. This makes exam files cleaner and easier to read:
+
+**Spacing & Page Breaks:**
+
+- `{{vf}}` → `` `#vf()`{=typst} `` (vertical fill)
+- `{{pagebreak}}` → `` `#pagebreak()`{=typst} ``
+
+**Answer Blanks:**
+
+- `{{sblank}}` → `` `#sblank()`{=typst} `` (short blank line)
+- `{{lblank}}` → `` `#lblank()`{=typst} `` (long blank line)
+- `{{blank}}` → `` `#blank()`{=typst} `` (small blank with question mark)
+- `{{ssblank}}` → `` `#ssblank()`{=typst} ``
+
+**Layout Modes:**
+
+- `{{begin-narrow}}` ... `{{end-narrow}}` → `` `#narrow([`{=typst} `` ... `` `])`{=typst} ``
+- `{{begin-wide}}` ... `{{end-wide}}` → `` `#wide([`{=typst} `` ... `` `])`{=typst} ``
+
+**Example:**
+
+```markdown
+1. A question.
+
+{{vf}}
+
+2. A fill-in question: The answer is {{sblank}}.
+
+{{pagebreak}}
+
+3. A narrow layout question:
+
+{{begin-narrow}}
+Content constrained to left column
+{{end-narrow}}
+```
+
+### Full Typst Syntax (Alternative)
+
+If you prefer explicit Typst syntax, use the backtick-wrapped versions directly:
+
+**Point Values:**
 - `` `#pts([N])`{=typst} `` - Adds a superscript point value (e.g., "(10 pt.)")
 - `` `#ptseach([N])`{=typst} `` - Adds a superscript point value for multiple items (e.g., "(5 pt. each)")
 
-### Answer Blanks
+**Answer Blanks:**
 - `` `#blank()`{=typst} `` - Small blank with question mark
 - `` `#ssblank()`{=typst} `` - Small blank with question mark (same as blank)
 - `` `#sblank()`{=typst} `` - Short blank line
 - `` `#lblank()`{=typst} `` - Long blank line
 
-### Spacing
+**Spacing:**
 - `` `#vf()`{=typst} `` - Vertical fill (expands to fill available space)
 - `` `#pagebreak()`{=typst} `` - Page break
 
-### Layout Modes
+**Layout Modes:**
 - `` `#wide([content])`{=typst} `` - Full-width layout (default)
 - `` `#narrow([content])`{=typst} `` - Narrow layout with right column blank for handwritten answers (default left column width: 2.37in)
 - `` `#narrow(columnwidth: 3in, [content])`{=typst} `` - Custom left column width
