@@ -2,6 +2,16 @@
 // This applies document-wide settings
 
 #show: doc => {
+  // Set font from YAML frontmatter (if specified)
+  $if(mainfont)$
+  set text(font: "$mainfont$")
+  $endif$
+
+  // Set font size from YAML frontmatter (if specified)
+  $if(fontsize)$
+  set text(size: $fontsize$)
+  $endif$
+
   // Remove page numbering
   set page(numbering: none)
 

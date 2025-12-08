@@ -3,15 +3,14 @@ title: "Data Structures Final Exam"
 subtitle: "Spring 2025"
 exam-noname: false
 exam-noinstructions: false
-exam-titlesize: 20pt
-exam-subtitlesize: 14pt
+exam-titlesize: 14pt
+exam-subtitlesize: 12pt
 format:
   typst:
     papersize: us-letter
     margin:
       x: 2cm
       y: 2cm
-    mainfont: "Times New Roman"
     fontsize: 10pt
     template-partials:
       - typst-template.typ
