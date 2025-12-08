@@ -2,57 +2,66 @@
 -- Also provides shorthand syntax for common Typst exam functions
 
 -- Mapping of shorthand syntax to Typst code
-local shorthand_replacements = {
-  ["{{vf}}"] = "`#vf()`{=typst}",
-  ["{{sblank}}"] = "`#sblank()`{=typst}",
-  ["{{blank}}"] = "`#blank()`{=typst}",
-  ["{{ssblank}}"] = "`#ssblank()`{=typst}",
-  ["{{lblank}}"] = "`#lblank()`{=typst}",
-  ["{{pagebreak}}"] = "`#pagebreak()`{=typst}",
-  ["{{begin-narrow}}"] = "`#narrow([`{=typst}",
-  ["{{end-narrow}}"] = "`])`{=typst}",
-  ["{{begin-wide}}"] = "`#wide([`{=typst}",
-  ["{{end-wide}}"] = "`])`{=typst}",
+local shorthand_map = {
+  ["{{vf}}"] = "#vf()",
+  ["{{sblank}}"] = "#sblank()",
+  ["{{blank}}"] = "#blank()",
+  ["{{ssblank}}"] = "#ssblank()",
+  ["{{lblank}}"] = "#lblank()",
+  ["{{pagebreak}}"] = "#pagebreak()",
+  ["{{begin-narrow}}"] = "#narrow([",
+  ["{{end-narrow}}"] = "])",
+  ["{{begin-wide}}"] = "#wide([",
+  ["{{end-wide}}"] = "])",
 }
 
--- Replace shorthand in text
-local function replace_shorthand(text)
-  for shorthand, replacement in pairs(shorthand_replacements) do
-    text = text:gsub(shorthand:gsub("[%-%.%+%*%?%[%]%(%)%^%$%%]", "%%%1"), replacement)
-  end
-  return text
+-- Escape special characters for pattern matching
+local function escape_pattern(text)
+  return text:gsub("[%-%.%+%*%?%[%]%(%)%^%$%%]", "%%%1")
 end
 
--- Process Str elements (plain text)
+-- Process Str elements (plain text) - this is where inline text gets processed
 function Str(elem)
-  local newtext = replace_shorthand(elem.text)
-  if newtext ~= elem.text then
-    -- If text was replaced, we need to parse it as markdown to get inline elements
-    return pandoc.read(newtext, "markdown").blocks[1].content
+  -- Check if this string contains any shorthand
+  for shorthand, typst_code in pairs(shorthand_map) do
+    if elem.text:find(escape_pattern(shorthand), 1, true) then
+      -- Split the text around the shorthand and create a list of inlines
+      local result = {}
+      local remaining = elem.text
+
+      while remaining ~= "" do
+        local start_pos, end_pos = remaining:find(escape_pattern(shorthand), 1, true)
+        if start_pos then
+          -- Add text before the shorthand
+          if start_pos > 1 then
+            table.insert(result, pandoc.Str(remaining:sub(1, start_pos - 1)))
+          end
+          -- Add the Typst code as inline raw
+          table.insert(result, pandoc.RawInline("typst", typst_code))
+          -- Continue with remaining text
+          remaining = remaining:sub(end_pos + 1)
+        else
+          -- No more shorthands, add remaining text
+          if remaining ~= "" then
+            table.insert(result, pandoc.Str(remaining))
+          end
+          break
+        end
+      end
+
+      return result
+    end
   end
+
   return elem
 end
 
--- Process inline elements (for text within paragraphs)
-function RawInline(elem)
-  if elem.format == "html" or elem.format == "markdown" then
-    elem.text = replace_shorthand(elem.text)
-  end
-  return elem
-end
-
--- Process block elements (for standalone text)
-function RawBlock(elem)
-  if elem.format == "html" or elem.format == "markdown" then
-    elem.text = replace_shorthand(elem.text)
-  end
-  return elem
-end
-
--- Process code blocks that are plain text
-function CodeBlock(elem)
-  elem.text = replace_shorthand(elem.text)
-  return elem
+-- Process Para elements to handle shorthands in paragraph context
+function Para(elem)
+  -- Walk through all inline elements in the paragraph
+  return pandoc.walk_block(elem, {
+    Str = Str
+  })
 end
 
 function Pandoc(doc)

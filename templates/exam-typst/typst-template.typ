@@ -15,27 +15,12 @@
 }
 
 // Answer blank functions
-#let sblank() = {
-  h(0.1em)
-  line(length: 1.5em, stroke: 0.5pt)
-  h(0.1em)
-}
+// Use box() to force inline rendering
+#let sblank() = box[#h(0.1em)#box(line(length: 1.5em, stroke: 0.5pt))#h(0.1em)]
 
-#let ssblank() = {
-  h(0.1em)
-  line(length: 0.5em, stroke: 0.5pt)
-  h(0.1em)
-  [?]
-  h(0.1em)
-  line(length: 0.5em, stroke: 0.5pt)
-  h(0.1em)
-}
+#let ssblank() = box[#h(0.1em)#box(line(length: 0.5em, stroke: 0.5pt))#h(0.1em)?#h(0.1em)#box(line(length: 0.5em, stroke: 0.5pt))#h(0.1em)]
 
-#let lblank() = {
-  h(0.1em)
-  line(length: 10em, stroke: 0.5pt)
-  h(0.1em)
-}
+#let lblank() = box[#h(0.1em)#box(line(length: 10em, stroke: 0.5pt))#h(0.1em)]
 
 #let blank() = ssblank()
 

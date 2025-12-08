@@ -82,6 +82,8 @@ def mystery(arr):
 
    {{lblank}}
 
+1a. `#pts([2])`{=typst} The velocity is {{sblank}} m/s and the acceleration is {{ssblank}} m/s².
+
 2. `#pts([10])`{=typst} What is the time complexity? Explain your reasoning.
 
 {{vf}}
