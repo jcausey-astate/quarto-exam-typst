@@ -12,6 +12,7 @@ format:
       x: 2cm
       y: 2cm
     fontsize: 10pt
+    keep-typ: true
     template-partials:
       - templates/exam-typst/typst-template.typ
       - templates/exam-typst/typst-show.typ

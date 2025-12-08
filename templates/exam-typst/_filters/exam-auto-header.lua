@@ -98,6 +98,23 @@ end
 
 -- Process Para elements to handle shorthands in paragraph context
 function Para(elem)
+  -- Check if this paragraph contains only a layout shortcode
+  if #elem.content == 1 and elem.content[1].t == "Str" then
+    local text = elem.content[1].text
+    -- Check for layout shortcodes that should be RawBlocks
+    for shorthand, typst_code in pairs(shorthand_map) do
+      if text == shorthand and (
+        shorthand == "{{begin-narrow}}" or
+        shorthand == "{{end-narrow}}" or
+        shorthand == "{{begin-wide}}" or
+        shorthand == "{{end-wide}}"
+      ) then
+        -- Convert to RawBlock instead of keeping as Para
+        return pandoc.RawBlock("typst", typst_code)
+      end
+    end
+  end
+
   -- Walk through all inline elements in the paragraph
   return pandoc.walk_block(elem, {
     Str = Str
