@@ -86,7 +86,7 @@ def mystery(arr):
 
    {{lblank}}
 
-2. {{pts:10}} What is the time complexity? [Explain your reasoning.]{.large}
+2. {{pts:10}} What is the time complexity? [Explain your reasoning.]{.large .highlight}
 
 {{vf}}
 
@@ -98,9 +98,9 @@ def mystery(arr):
 
 Implement a function that reverses a singly linked list in-place.
 
-[*Requirements:*
-- Must modify the list in-place (O(1) space complexity)
-- Must run in O(n) time]{.small}
+[*Requirements:*\
+★ Must modify in-place ([O(1) space]{.blue})\
+★ Must run in O(n) time]{.small}
 
 ```python
 class Node:

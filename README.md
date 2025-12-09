@@ -98,7 +98,28 @@ This creates a highlighted box with pale blue background.
 
 **Combining Classes:**
 
-You can combine multiple classes: `[large red text]{.large .red}` or `[highlighted and big]{.highlight .huge}`
+You can combine multiple classes in any order to apply multiple styling effects:
+
+- Size + Color: `[large red text]{.large .red}`
+- Size + Highlight: `[small highlighted]{.small .highlight-green}`
+- Color + Highlight: `[blue text on yellow]{.blue .highlight-yellow}`
+- All three: `[large red highlighted]{.large .red .highlight}`
+
+The order doesn't matter - `[text]{.red .large}` and `[text]{.large .red}` produce the same result.
+
+**Nesting Spans:**
+
+Spans can be nested arbitrarily deep. The styling is properly preserved:
+
+```markdown
+[Outer large text with [nested red]{.red} inside]{.large}
+
+[*Requirements:*
+★ Must modify in-place ([O(1) space]{.blue})
+★ Must run in O(n) time]{.small}
+```
+
+Each nested span retains its own styling while being contained within the outer span's styling.
 
 **Practical Examples:**
 
