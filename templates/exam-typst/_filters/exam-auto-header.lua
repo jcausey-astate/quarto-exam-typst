@@ -99,6 +99,60 @@ function Str(elem)
   return elem
 end
 
+-- Handle inline spans with custom classes [text]{.classname}
+function Span(elem)
+  -- Check if span has classes
+  if #elem.classes > 0 then
+    for _, class in ipairs(elem.classes) do
+      -- Map class names to Typst text sizes
+      local size_map = {
+        ["tiny"] = "7pt",
+        ["small"] = "8pt",
+        ["large"] = "12pt",
+        ["huge"] = "14pt",
+        ["Large"] = "14pt",  -- alternative
+        ["LARGE"] = "16pt",
+      }
+
+      if size_map[class] then
+        -- Convert content to string
+        local content = pandoc.utils.stringify(elem.content)
+        -- Wrap in Typst text() function with size
+        return pandoc.RawInline("typst",
+          string.format("#text(size: %s)[%s]", size_map[class], content))
+      end
+    end
+  end
+  return elem
+end
+
+-- Handle block divs with custom classes ::: {.classname}
+function Div(elem)
+  -- Check if div has classes
+  if #elem.classes > 0 then
+    for _, class in ipairs(elem.classes) do
+      -- Map class names to Typst text sizes
+      local size_map = {
+        ["tiny"] = "7pt",
+        ["small"] = "8pt",
+        ["large"] = "12pt",
+        ["huge"] = "14pt",
+        ["Large"] = "14pt",  -- alternative
+        ["LARGE"] = "16pt",
+      }
+
+      if size_map[class] then
+        -- Convert content to string
+        local content = pandoc.utils.stringify(elem.content)
+        -- Wrap in Typst text() function with size
+        return pandoc.RawBlock("typst",
+          string.format("#text(size: %s)[\n%s\n]", size_map[class], content))
+      end
+    end
+  end
+  return elem
+end
+
 -- Process Para elements to handle shorthands in paragraph context
 function Para(elem)
   -- Check if this paragraph contains only a layout shortcode
@@ -120,7 +174,8 @@ function Para(elem)
 
   -- Walk through all inline elements in the paragraph
   return pandoc.walk_block(elem, {
-    Str = Str
+    Str = Str,
+    Span = Span  -- Also process Span elements
   })
 end
 

@@ -52,6 +52,33 @@ Write your question here. {{ptseach:5}}
 {{vf}}
 ```
 
+## Custom Text Styling with Classes
+
+The template supports Quarto's standard inline and block-level class syntax for text sizing:
+
+**Inline styling:**
+```markdown
+This is [small text]{.small} and [large text]{.large} in a sentence.
+```
+
+**Block-level styling:**
+```markdown
+::: {.large}
+This entire paragraph will be large.
+It can span multiple lines.
+:::
+```
+
+**Available size classes:**
+
+- `.tiny` - 7pt
+- `.small` - 8pt
+- `.large` - 12pt
+- `.huge` or `.Large` - 14pt
+- `.LARGE` - 16pt
+
+These classes work with both inline spans `[text]{.classname}` and block divs `::: {.classname}`. You can easily extend the Lua filter to add more custom classes for other styling needs (colors, bold, italic, etc.).
+
 ## Available Shortcodes
 
 The template includes a Lua filter that provides convenient shortcode syntax for common exam elements. All shortcodes use the `{{keyword}}` or `{{keyword:parameter}}` format.
