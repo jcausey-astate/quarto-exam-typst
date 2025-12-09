@@ -114,12 +114,42 @@ function Span(elem)
         ["LARGE"] = "16pt",
       }
 
+      -- Map class names to Typst colors
+      local color_map = {
+        ["red"] = "red",
+        ["blue"] = "blue",
+        ["green"] = "green",
+        ["orange"] = "orange",
+        ["purple"] = "purple",
+        ["gray"] = "gray",
+        ["grey"] = "gray",
+      }
+
+      -- Map class names to highlight colors (pale backgrounds)
+      local highlight_map = {
+        ["highlight"] = "rgb(255, 255, 200)",      -- pale yellow
+        ["highlight-yellow"] = "rgb(255, 255, 200)",
+        ["highlight-green"] = "rgb(200, 255, 200)",
+        ["highlight-blue"] = "rgb(200, 230, 255)",
+        ["highlight-pink"] = "rgb(255, 200, 230)",
+        ["highlight-orange"] = "rgb(255, 230, 200)",
+      }
+
+      local content = pandoc.utils.stringify(elem.content)
+
       if size_map[class] then
-        -- Convert content to string
-        local content = pandoc.utils.stringify(elem.content)
         -- Wrap in Typst text() function with size
         return pandoc.RawInline("typst",
           string.format("#text(size: %s)[%s]", size_map[class], content))
+      elseif color_map[class] then
+        -- Wrap in Typst text() function with color
+        return pandoc.RawInline("typst",
+          string.format("#text(fill: %s)[%s]", color_map[class], content))
+      elseif highlight_map[class] then
+        -- Wrap in Typst box() with background color
+        return pandoc.RawInline("typst",
+          string.format("#box(fill: %s, outset: 2pt, radius: 2pt)[%s]",
+            highlight_map[class], content))
       end
     end
   end
@@ -141,12 +171,42 @@ function Div(elem)
         ["LARGE"] = "16pt",
       }
 
+      -- Map class names to Typst colors
+      local color_map = {
+        ["red"] = "red",
+        ["blue"] = "blue",
+        ["green"] = "green",
+        ["orange"] = "orange",
+        ["purple"] = "purple",
+        ["gray"] = "gray",
+        ["grey"] = "gray",
+      }
+
+      -- Map class names to highlight colors (pale backgrounds)
+      local highlight_map = {
+        ["highlight"] = "rgb(255, 255, 200)",      -- pale yellow
+        ["highlight-yellow"] = "rgb(255, 255, 200)",
+        ["highlight-green"] = "rgb(200, 255, 200)",
+        ["highlight-blue"] = "rgb(200, 230, 255)",
+        ["highlight-pink"] = "rgb(255, 200, 230)",
+        ["highlight-orange"] = "rgb(255, 230, 200)",
+      }
+
+      local content = pandoc.utils.stringify(elem.content)
+
       if size_map[class] then
-        -- Convert content to string
-        local content = pandoc.utils.stringify(elem.content)
         -- Wrap in Typst text() function with size
         return pandoc.RawBlock("typst",
           string.format("#text(size: %s)[\n%s\n]", size_map[class], content))
+      elseif color_map[class] then
+        -- Wrap in Typst text() function with color
+        return pandoc.RawBlock("typst",
+          string.format("#text(fill: %s)[\n%s\n]", color_map[class], content))
+      elseif highlight_map[class] then
+        -- Wrap in Typst box() with background color and padding
+        return pandoc.RawBlock("typst",
+          string.format("#box(fill: %s, inset: 8pt, radius: 4pt, width: 100%%)[\n%s\n]",
+            highlight_map[class], content))
       end
     end
   end

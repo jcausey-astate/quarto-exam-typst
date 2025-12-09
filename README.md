@@ -54,11 +54,12 @@ Write your question here. {{ptseach:5}}
 
 ## Custom Text Styling with Classes
 
-The template supports Quarto's standard inline and block-level class syntax for text sizing:
+The template supports Quarto's standard inline and block-level class syntax for text styling including size, color, and highlighting.
 
 **Inline styling:**
 ```markdown
-This is [small text]{.small} and [large text]{.large} in a sentence.
+This is [small text]{.small} and [large red text]{.large .red} in a sentence.
+You can also [highlight important text]{.highlight}.
 ```
 
 **Block-level styling:**
@@ -67,9 +68,15 @@ This is [small text]{.small} and [large text]{.large} in a sentence.
 This entire paragraph will be large.
 It can span multiple lines.
 :::
+
+::: {.highlight-blue}
+This creates a highlighted box with pale blue background.
+:::
 ```
 
-**Available size classes:**
+### Available Classes
+
+**Text Sizes:**
 
 - `.tiny` - 7pt
 - `.small` - 8pt
@@ -77,7 +84,35 @@ It can span multiple lines.
 - `.huge` or `.Large` - 14pt
 - `.LARGE` - 16pt
 
-These classes work with both inline spans `[text]{.classname}` and block divs `::: {.classname}`. You can easily extend the Lua filter to add more custom classes for other styling needs (colors, bold, italic, etc.).
+**Text Colors:**
+
+- `.red`, `.blue`, `.green`, `.orange`, `.purple`, `.gray` (or `.grey`)
+
+**Highlights** (pale background colors):
+
+- `.highlight` or `.highlight-yellow` - Pale yellow background
+- `.highlight-green` - Pale green background
+- `.highlight-blue` - Pale blue background
+- `.highlight-pink` - Pale pink background
+- `.highlight-orange` - Pale orange background
+
+**Combining Classes:**
+
+You can combine multiple classes: `[large red text]{.large .red}` or `[highlighted and big]{.highlight .huge}`
+
+**Practical Examples:**
+
+```markdown
+1. Mark [correct answers]{.green} and [incorrect answers]{.red}.
+2. [Highlight key terms]{.highlight-yellow} in questions.
+3. Use [warning text]{.orange} for important notes.
+
+::: {.highlight-blue}
+**Tip:** This creates a visually distinct instruction box.
+:::
+```
+
+All classes work with both inline spans `[text]{.classname}` and block divs `::: {.classname}`. You can easily extend the Lua filter in `templates/exam-typst/_filters/exam-auto-header.lua` to add more custom styling options.
 
 ## Available Shortcodes
 
