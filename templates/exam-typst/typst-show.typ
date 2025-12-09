@@ -104,31 +104,15 @@
       let force_wide = force-wide-state.get()
       let width_constraint = if mode == "narrow" and not force_wide { 2.37in } else { 100% }
 
-      // Check if we're in a nested list
+      // Check if we're in a nested context (either in another list or in an enum)
       let nesting = list-nesting-depth.get()
 
       // Increment nesting depth
       list-nesting-depth.update(n => n + 1)
 
-      let result = if nesting == 0 {
-        // Top-level list: add flexible spacing between items
-        let items = it.children
-
-        block(width: width_constraint, {
-          // Manually format each item
-          for (idx, item) in items.enumerate() {
-            // Manually format bulleted list items to avoid recursion
-            [• #item.body]
-
-            // Add flexible spacing after each item (including the last)
-            v(1em, weak: true)  // Minimum spacing
-            v(1fr)              // Flexible spacing to fill page
-          }
-        })
-      } else {
-        // Nested list: just apply width constraint, use default spacing
-        block(width: width_constraint, it)
-      }
+      // Bulleted lists should NEVER get flexible spacing (they're always sublists)
+      // Only numbered enums at the top level should get flexible spacing
+      let result = block(width: width_constraint, it)
 
       // Decrement nesting depth
       list-nesting-depth.update(n => n - 1)

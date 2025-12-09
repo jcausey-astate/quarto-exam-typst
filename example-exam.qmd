@@ -13,6 +13,7 @@ format:
       x: 2cm
       y: 2cm
     fontsize: 10pt
+    keep-typ: true
     template-partials:
       - templates/exam-typst/typst-template.typ
       - templates/exam-typst/typst-show.typ
@@ -52,6 +53,8 @@ Choose the best answer for each question. {{ptseach:4}}
 Answer each question in 2-3 sentences. {{ptseach:10}}
 
 1. {{pts:10}} Explain the difference between a stack and a queue.
+   * Consider the space and time complexity
+   * Consider usage patterns
 
 {{vf}}
 
@@ -83,7 +86,7 @@ def mystery(arr):
 
    {{lblank}}
 
-2. {{pts:10}} What is the time complexity? Explain your reasoning.
+2. {{pts:10}} What is the time complexity? [Explain your reasoning.]{.large}
 
 {{vf}}
 
@@ -95,9 +98,9 @@ def mystery(arr):
 
 Implement a function that reverses a singly linked list in-place.
 
-*Requirements:*
+[*Requirements:*
 - Must modify the list in-place (O(1) space complexity)
-- Must run in O(n) time
+- Must run in O(n) time]{.small}
 
 ```python
 class Node:
