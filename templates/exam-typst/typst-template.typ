@@ -33,6 +33,9 @@
 // State variable to track when we're in a force-wide context (like instructions)
 #let force-wide-state = state("force-wide", false)
 
+// State variable to track nesting depth of lists (to avoid distribution spacing in nested lists)
+#let list-nesting-depth = state("list-nesting-depth", 0)
+
 // Layout modes for answer space
 // These functions now work by adjusting the width of content blocks
 // The default width is controlled by the exam-question-width-state

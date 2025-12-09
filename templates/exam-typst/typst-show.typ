@@ -53,22 +53,43 @@
       let force_wide = force-wide-state.get()
       let width_constraint = if mode == "narrow" and not force_wide { 2.37in } else { 100% }
 
-      // Get the items and their content
-      let items = it.children
-      let num_items = items.len()
+      // Check if we're in a nested list (by checking if any parent content contains us)
+      let nesting = list-nesting-depth.get()
 
-      // Format items with flexible spacing between them
-      block(width: width_constraint, {
-        for (idx, item) in items.enumerate() {
-          // Manually format numbered list items to avoid recursion
-          [#(idx + 1). #item.body]
-          // Add flexible spacing after each item except the last
-          if idx < num_items - 1 {
+      // Increment nesting depth for any enums inside this one
+      list-nesting-depth.update(n => n + 1)
+
+      // Only apply flexible spacing to top-level question enums (numbering "1.")
+      // Other numbering styles (like "a)", "i.", etc.) are sub-parts and shouldn't get flexible spacing
+      let is_question_enum = (it.numbering == "1." or it.numbering == "1)") and nesting == 0
+
+      let result = if is_question_enum {
+        // Top-level question enum: add flexible spacing between items
+        let items = it.children
+        let start_num = if it.start == auto { 1 } else { it.start }
+
+        block(width: width_constraint, {
+          // Use numbering function to format items properly
+          for (idx, item) in items.enumerate() {
+            let item_num = start_num + idx
+            // Format using the original numbering style
+            let formatted_num = numbering(it.numbering, item_num)
+            [#formatted_num #item.body]
+
+            // Add flexible spacing after each item (including the last)
             v(1em, weak: true)  // Minimum spacing
             v(1fr)              // Flexible spacing to fill page
           }
-        }
-      })
+        })
+      } else {
+        // Sub-part enum or nested: just apply width constraint, use default spacing
+        block(width: width_constraint, it)
+      }
+
+      // Decrement nesting depth
+      list-nesting-depth.update(n => n - 1)
+
+      result
     }
   }
 
@@ -78,22 +99,36 @@
       let force_wide = force-wide-state.get()
       let width_constraint = if mode == "narrow" and not force_wide { 2.37in } else { 100% }
 
-      // Get the items and their content
-      let items = it.children
-      let num_items = items.len()
+      // Check if we're in a nested list
+      let nesting = list-nesting-depth.get()
 
-      // Format items with flexible spacing between them
-      block(width: width_constraint, {
-        for (idx, item) in items.enumerate() {
-          // Manually format bulleted list items to avoid recursion
-          [• #item.body]
-          // Add flexible spacing after each item except the last
-          if idx < num_items - 1 {
+      // Increment nesting depth
+      list-nesting-depth.update(n => n + 1)
+
+      let result = if nesting == 0 {
+        // Top-level list: add flexible spacing between items
+        let items = it.children
+
+        block(width: width_constraint, {
+          // Manually format each item
+          for (idx, item) in items.enumerate() {
+            // Manually format bulleted list items to avoid recursion
+            [• #item.body]
+
+            // Add flexible spacing after each item (including the last)
             v(1em, weak: true)  // Minimum spacing
             v(1fr)              // Flexible spacing to fill page
           }
-        }
-      })
+        })
+      } else {
+        // Nested list: just apply width constraint, use default spacing
+        block(width: width_constraint, it)
+      }
+
+      // Decrement nesting depth
+      list-nesting-depth.update(n => n - 1)
+
+      result
     }
   }
 
