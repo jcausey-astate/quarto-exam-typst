@@ -51,11 +51,22 @@
     context {
       let mode = exam-question-width-state.get()
       let force_wide = force-wide-state.get()
-      if mode == "narrow" and not force_wide {
-        block(width: 2.37in, it)
-      } else {
-        it
-      }
+      let width_constraint = if mode == "narrow" and not force_wide { 2.37in } else { 100% }
+
+      // Get the items and their content
+      let items = it.children
+
+      // Create a grid with flexible spacing between items to fill the page
+      block(width: width_constraint,
+        grid(
+          rows: items.map(_ => auto),
+          row-gutter: 1fr,
+          ..items.enumerate().map(((idx, item)) => {
+            // Manually format numbered list items to avoid recursion
+            [#(idx + 1). #item.body]
+          })
+        )
+      )
     }
   }
 
@@ -63,11 +74,22 @@
     context {
       let mode = exam-question-width-state.get()
       let force_wide = force-wide-state.get()
-      if mode == "narrow" and not force_wide {
-        block(width: 2.37in, it)
-      } else {
-        it
-      }
+      let width_constraint = if mode == "narrow" and not force_wide { 2.37in } else { 100% }
+
+      // Get the items and their content
+      let items = it.children
+
+      // Create a grid with flexible spacing between items to fill the page
+      block(width: width_constraint,
+        grid(
+          rows: items.map(_ => auto),
+          row-gutter: 1fr,
+          ..items.map(item => {
+            // Manually format bulleted list items to avoid recursion
+            [• #item.body]
+          })
+        )
+      )
     }
   }
 
