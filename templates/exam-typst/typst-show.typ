@@ -67,6 +67,7 @@
         // Top-level question enum: add flexible spacing between items
         let items = it.children
         let start_num = if it.start == auto { 1 } else { it.start }
+        let num_items = items.len()
 
         block(width: width_constraint, {
           // Use numbering function to format items properly
@@ -76,9 +77,13 @@
             let formatted_num = numbering(it.numbering, item_num)
             [#formatted_num #item.body]
 
-            // Add flexible spacing after each item (including the last)
-            v(1em, weak: true)  // Minimum spacing
-            v(1fr)              // Flexible spacing to fill page
+            // Add flexible spacing after each item
+            // For multi-item enums: add after all items including the last
+            // For single-item enums: DON'T add after the last (to keep with following content like code blocks)
+            if (num_items > 1) or (idx < num_items - 1) {
+              v(1em, weak: true)  // Minimum spacing
+              v(1fr)              // Flexible spacing to fill page
+            }
           }
         })
       } else {
