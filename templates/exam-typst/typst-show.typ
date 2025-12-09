@@ -55,18 +55,20 @@
 
       // Get the items and their content
       let items = it.children
+      let num_items = items.len()
 
-      // Create a grid with flexible spacing between items to fill the page
-      block(width: width_constraint,
-        grid(
-          rows: items.map(_ => auto),
-          row-gutter: 1fr,
-          ..items.enumerate().map(((idx, item)) => {
-            // Manually format numbered list items to avoid recursion
-            [#(idx + 1). #item.body]
-          })
-        )
-      )
+      // Format items with flexible spacing between them
+      block(width: width_constraint, {
+        for (idx, item) in items.enumerate() {
+          // Manually format numbered list items to avoid recursion
+          [#(idx + 1). #item.body]
+          // Add flexible spacing after each item except the last
+          if idx < num_items - 1 {
+            v(1em, weak: true)  // Minimum spacing
+            v(1fr)              // Flexible spacing to fill page
+          }
+        }
+      })
     }
   }
 
@@ -78,18 +80,20 @@
 
       // Get the items and their content
       let items = it.children
+      let num_items = items.len()
 
-      // Create a grid with flexible spacing between items to fill the page
-      block(width: width_constraint,
-        grid(
-          rows: items.map(_ => auto),
-          row-gutter: 1fr,
-          ..items.map(item => {
-            // Manually format bulleted list items to avoid recursion
-            [• #item.body]
-          })
-        )
-      )
+      // Format items with flexible spacing between them
+      block(width: width_constraint, {
+        for (idx, item) in items.enumerate() {
+          // Manually format bulleted list items to avoid recursion
+          [• #item.body]
+          // Add flexible spacing after each item except the last
+          if idx < num_items - 1 {
+            v(1em, weak: true)  // Minimum spacing
+            v(1fr)              // Flexible spacing to fill page
+          }
+        }
+      })
     }
   }
 
