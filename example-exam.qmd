@@ -5,7 +5,8 @@ exam-noname: false
 exam-noinstructions: false
 exam-titlesize: 14pt
 exam-subtitlesize: 12pt
-exam-question-width: narrow
+exam-question-display: narrow
+exam-question-width: 3.33in
 format:
   typst:
     papersize: us-letter
@@ -135,6 +136,10 @@ def reverse_list(head):
 Answer the following in the space provided to the right.
 
 1. {{pts:5}} Calculate: 42 × 17 and give the answer below.  This is a long question.
+
+::: {.answer}
+42 × 17 = **714**
+:::
 
 {{vf}}
 

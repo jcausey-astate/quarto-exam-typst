@@ -1,22 +1,43 @@
 -- Auto-generate exam header from YAML metadata
 -- Also provides shorthand syntax for common Typst exam functions
 
--- Default mapping of shorthand syntax to Typst code (when exam-question-width is "wide" or unset)
-local default_shorthand_map = {
+-- Default mapping of shorthand syntax to Typst code (when exam-question-display is "wide" or unset)
+local shorthand_map = {
   ["{{vf}}"] = "#vf()",
   ["{{sblank}}"] = "#sblank()",
   ["{{blank}}"] = "#blank()",
   ["{{ssblank}}"] = "#ssblank()",
   ["{{lblank}}"] = "#lblank()",
-  ["{{pagebreak}}"] = "#pagebreak()",
   ["{{begin-narrow}}"] = "#narrow([",
   ["{{end-narrow}}"] = "])",
   ["{{begin-wide}}"] = "#wide([",
   ["{{end-wide}}"] = "])",
 }
 
--- This will be set based on exam-question-width parameter
-local shorthand_map = default_shorthand_map
+-- This will be set based on exam-question-display parameter
+local box_width = "100%"  -- boxes default to full width; narrow mode changes this
+
+-- Process metadata first to set box_width before processing document elements
+function Meta(meta)
+  -- Get exam-question-display and exam-question-width from metadata
+  local exam_question_display = "wide"  -- default
+  local exam_question_width = "2.37in"  -- default
+
+  if meta["exam-question-display"] then
+    exam_question_display = pandoc.utils.stringify(meta["exam-question-display"]):lower()
+  end
+
+  if meta["exam-question-width"] then
+    exam_question_width = pandoc.utils.stringify(meta["exam-question-width"]):lower()
+  end
+
+  -- Set box_width based on display mode
+  if exam_question_display == "narrow" then
+    box_width = exam_question_width
+  end
+
+  return meta
+end
 
 -- Escape special characters for pattern matching
 local function escape_pattern(text)
@@ -308,8 +329,8 @@ function Div(elem)
       if exambox then
         -- Exambox with rounded right corners, square left, thicker left edge
         local exambox_code = string.format(
-          "#block(fill: %s, stroke: (left: 3pt + %s, rest: 0.5pt + %s), radius: (top-right: 6pt, bottom-right: 6pt, rest: 0pt), inset: 10pt, width: 100%%)[\n",
-          exambox.fill, exambox.stroke, exambox.stroke
+          "#block(fill: %s, stroke: (left: 3pt + %s, rest: 0.5pt + %s), radius: (top-right: 6pt, bottom-right: 6pt, rest: 0pt), inset: 10pt, width: %s)[\n",
+          exambox.fill, exambox.stroke, exambox.stroke, box_width
         )
         table.insert(open_parts, exambox_code)
         table.insert(close_parts, 1, "]")
@@ -317,13 +338,13 @@ function Div(elem)
 
       -- Apply answer styling as wrapper if needed (and not already in exambox)
       if is_answer and not exambox then
-        table.insert(open_parts, string.format("#block(fill: %s, inset: 8pt, radius: 3pt, width: 100%%)[\n", answer_style.bg))
+        table.insert(open_parts, string.format("#block(fill: %s, inset: 8pt, radius: 3pt, width: %s)[\n", answer_style.bg, box_width))
         table.insert(close_parts, 1, "]")
       end
 
       -- Apply highlight (box) as wrapper if needed (and not already in exambox or answer)
       if highlight and not exambox and not is_answer then
-        table.insert(open_parts, string.format("#box(fill: %s, inset: 8pt, radius: 4pt, width: 100%%)[\n", highlight))
+        table.insert(open_parts, string.format("#box(fill: %s, inset: 8pt, radius: 4pt, width: %s)[\n", highlight, box_width))
         table.insert(close_parts, 1, "]")
       end
 
@@ -402,7 +423,8 @@ function Pandoc(doc)
   local exam_noinstructions_str = "false"
   local exam_titlesize = "20pt"
   local exam_subtitlesize = "14pt"
-  local exam_question_width = "wide"  -- default to wide for backwards compatibility
+  local exam_question_display = "wide"  -- default to wide
+  local exam_question_width = "2.37in"  -- default width
 
   if doc.meta.title then
     title = pandoc.utils.stringify(doc.meta.title)
@@ -428,16 +450,18 @@ function Pandoc(doc)
     exam_subtitlesize = pandoc.utils.stringify(doc.meta["exam-subtitlesize"])
   end
 
+  if doc.meta["exam-question-display"] then
+    exam_question_display = pandoc.utils.stringify(doc.meta["exam-question-display"]):lower()
+  end
+
   if doc.meta["exam-question-width"] then
     exam_question_width = pandoc.utils.stringify(doc.meta["exam-question-width"]):lower()
   end
 
-  -- The shorthand_map is always the same now - the Typst functions handle mode logic
-  shorthand_map = default_shorthand_map
-
-  -- Create code to set the exam-question-width state
-  local state_code = string.format([[#exam-question-width-state.update("%s")
-]], exam_question_width)
+  -- Create code to set the exam-question-display and exam-question-width state
+  local state_code = string.format([[#exam-question-display-state.update("%s")
+#exam-question-width-state.update("%s")
+]], exam_question_display, exam_question_width)
 
   -- Create the exam header Typst code
   local header_code = string.format([[#import "templates/exam-typst/exam-header.typ": exam-header
@@ -469,3 +493,10 @@ function Pandoc(doc)
 
   return doc
 end
+
+-- Explicitly define filter execution order
+return {
+  { Meta = Meta },  -- Process metadata first to set box_width
+  { Str = Str, Span = Span, Para = Para, Div = Div },  -- Then process elements
+  { Pandoc = Pandoc }  -- Finally process the whole document
+}

@@ -28,7 +28,10 @@
 #let vf() = v(1fr)
 
 // State variable to track the default question width mode
-#let exam-question-width-state = state("exam-question-width", "wide")
+#let exam-question-display-state = state("exam-question-display", "wide")
+
+// State variable to track the question column width (in narrow mode)
+#let exam-question-width-state = state("exam-question-width", 2.37in)
 
 // State variable to track when we're in a force-wide context (like instructions)
 #let force-wide-state = state("force-wide", false)
@@ -38,12 +41,12 @@
 
 // Layout modes for answer space
 // These functions now work by adjusting the width of content blocks
-// The default width is controlled by the exam-question-width-state
+// The default width is controlled by the exam-question-display-state
 
 // Wide mode: content spans full page width
 #let wide(content) = {
   context {
-    let mode = exam-question-width-state.get()
+    let mode = exam-question-display-state.get()
     if mode == "narrow" {
       // In narrow-default mode, "wide" blocks need to override the narrow show rules
       // Use force-wide-state to signal that content should be full width
@@ -61,7 +64,7 @@
 // Default left column width is 2.37in (matching LaTeX template)
 #let narrow(columnwidth: 2.37in, content) = {
   context {
-    let mode = exam-question-width-state.get()
+    let mode = exam-question-display-state.get()
     if mode == "narrow" {
       // In narrow-default mode, this is a no-op (already narrow by default)
       content

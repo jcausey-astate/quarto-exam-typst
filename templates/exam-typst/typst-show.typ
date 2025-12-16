@@ -12,6 +12,14 @@
   set text(size: $fontsize$)
   $endif$
 
+  // Set "narrow" column width from YAML frontmatter (if specified)
+  // or default to 2.37in
+  $if(exam-question-width)$
+  let exam-question-width-state=$exam-question-width$
+  $else$
+  let exam-question-width-state=2.37in
+  $endif$
+
   // Remove page numbering
   set page(numbering: none)
 
@@ -25,10 +33,10 @@
   // This allows pagebreaks to work since we're not wrapping in blocks
   show par: it => {
     context {
-      let mode = exam-question-width-state.get()
+      let mode = exam-question-display-state.get()
       let force_wide = force-wide-state.get()
       if mode == "narrow" and not force_wide {
-        block(width: 2.37in, it)
+        block(width: exam-question-width-state, it)
       } else {
         it
       }
@@ -37,10 +45,10 @@
 
   show heading: it => {
     context {
-      let mode = exam-question-width-state.get()
+      let mode = exam-question-display-state.get()
       let force_wide = force-wide-state.get()
       if mode == "narrow" and not force_wide {
-        block(width: 2.37in, it)
+        block(width: exam-question-width-state, it)
       } else {
         it
       }
@@ -49,9 +57,9 @@
 
   show enum: it => {
     context {
-      let mode = exam-question-width-state.get()
+      let mode = exam-question-display-state.get()
       let force_wide = force-wide-state.get()
-      let width_constraint = if mode == "narrow" and not force_wide { 2.37in } else { 100% }
+      let width_constraint = if mode == "narrow" and not force_wide { exam-question-width-state } else { 100% }
 
       // Check if we're in a nested list (by checking if any parent content contains us)
       let nesting = list-nesting-depth.get()
@@ -100,9 +108,9 @@
 
   show list: it => {
     context {
-      let mode = exam-question-width-state.get()
+      let mode = exam-question-display-state.get()
       let force_wide = force-wide-state.get()
-      let width_constraint = if mode == "narrow" and not force_wide { 2.37in } else { 100% }
+      let width_constraint = if mode == "narrow" and not force_wide { exam-question-width-state } else { 100% }
 
       // Check if we're in a nested context (either in another list or in an enum)
       let nesting = list-nesting-depth.get()
@@ -130,11 +138,11 @@
       radius: 2pt
     )
     context {
-      let mode = exam-question-width-state.get()
+      let mode = exam-question-display-state.get()
       let force_wide = force-wide-state.get()
       if mode == "narrow" and not force_wide {
         // In narrow mode, constrain the block width
-        set block(width: 2.37in)
+        set block(width: exam-question-width-state)
         it
       } else {
         // In wide mode, use full width

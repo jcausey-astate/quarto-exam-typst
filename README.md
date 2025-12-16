@@ -167,6 +167,8 @@ The template provides `.exambox` classes for creating visually distinct boxes wi
 
 Examboxes support full content including lists, code blocks, and nested formatting.
 
+**Note:** When using `exam-question-display: narrow`, examboxes automatically constrain to the width specified by `exam-question-width` to align with other content in the left column.
+
 ### Answer Styling
 
 The `.answer` class provides subtle styling for marking answers in exams, with a light green background and darker green text.
@@ -193,6 +195,8 @@ Recursion is a programming technique where a function calls itself. It has:
 ```
 
 Answer blocks preserve the structure of lists, code blocks, and other formatting within them.
+
+**Note:** When using `exam-question-display: narrow`, answer blocks automatically constrain to the width specified by `exam-question-width` to align with other content in the left column.
 
 You can easily extend the Lua filter in `templates/exam-typst/_filters/exam-auto-header.lua` to add more custom styling options.
 
@@ -243,10 +247,10 @@ This renders as: "The velocity is ___ m/s and the temperature is \_?\_ degrees."
 - `{{begin-narrow}}` ... `{{end-narrow}}` - Narrow layout with right column blank for handwritten answers
 - `{{begin-wide}}` ... `{{end-wide}}` - Full-width layout
 
-The behavior of these layout blocks depends on the `exam-question-width` parameter:
+The behavior of these layout blocks depends on the `exam-question-display` parameter:
 
-- **When `exam-question-width: wide` (default):** The page defaults to full width. Use `{{begin-narrow}}...{{end-narrow}}` blocks to create constrained sections for handwritten answers.
-- **When `exam-question-width: narrow`:** The page defaults to narrow width (left column only). Use `{{begin-wide}}...{{end-wide}}` blocks to create full-width sections for diagrams, tables, or questions needing more space.
+- **When `exam-question-display: wide` (default):** The page defaults to full width. Use `{{begin-narrow}}...{{end-narrow}}` blocks to create constrained sections for handwritten answers.
+- **When `exam-question-display: narrow`:** The page defaults to narrow width (left column only). Use `{{begin-wide}}...{{end-wide}}` blocks to create full-width sections for diagrams, tables, or questions needing more space.
 
 **Layout example (wide mode - default):**
 
@@ -270,7 +274,7 @@ Answer the following in the space provided to the right.
 
 ```markdown
 ---
-exam-question-width: narrow
+exam-question-display: narrow
 ---
 
 This content appears in narrow mode by default.
@@ -304,7 +308,6 @@ If you prefer explicit Typst syntax, you can still use the backtick-wrapped form
 
 **Spacing:**
 - `` `#vf()`{=typst} `` - Vertical fill (expands to fill available space)
-- `` `#pagebreak()`{=typst} `` - Page break
 
 **Layout Modes:**
 - `` `#wide([content])`{=typst} `` - Full-width layout (default)
@@ -323,7 +326,8 @@ Configure the exam header using these YAML frontmatter variables:
 - `exam-subtitlesize` - Subtitle font size (default: 14pt)
 - `exam-noname` - Hide the name field (default: false)
 - `exam-noinstructions` - Hide the instructions (default: false)
-- `exam-question-width` - Default question width mode: "wide" or "narrow" (default: "wide")
+- `exam-question-display` - Default question display style: "wide" or "narrow" (default: "wide")
+- `exam-question-width` - Specific width of question column when in "narrow" question style. (No effect when in "wide" display style.)
 
 Example:
 ```yaml
@@ -333,7 +337,8 @@ exam-noname: false
 exam-noinstructions: false
 exam-titlesize: 20pt
 exam-subtitlesize: 14pt
-exam-question-width: narrow
+exam-question-display: narrow
+exam-question-width: 3.5in
 ```
 
 ## Example

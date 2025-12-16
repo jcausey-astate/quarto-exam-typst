@@ -40,7 +40,7 @@
 
   v(0.1in)
 
-  // Instructions (always render in full width, regardless of exam-question-width)
+  // Instructions (always render in full width, regardless of exam-question-display)
   if not noinstructions {
     let instr = if instructions != none {
       instructions
