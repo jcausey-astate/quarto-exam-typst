@@ -133,7 +133,64 @@ Each nested span retains its own styling while being contained within the outer 
 :::
 ```
 
-All classes work with both inline spans `[text]{.classname}` and block divs `::: {.classname}`. You can easily extend the Lua filter in `templates/exam-typst/_filters/exam-auto-header.lua` to add more custom styling options.
+All classes work with both inline spans `[text]{.classname}` and block divs `::: {.classname}`. Block-level styling preserves the structure of lists, code blocks, and nested divs within the styled content.
+
+### Exambox (Styled Callout Boxes)
+
+The template provides `.exambox` classes for creating visually distinct boxes with colored backgrounds. These are useful for example problems, parenthetical notes, or important instructions.
+
+**Available Exambox Styles:**
+
+- `.exambox` or `.exambox-blue` - Light blue background with blue border
+- `.exambox-green` - Light green background with green border
+- `.exambox-yellow` - Light yellow background with yellow border
+- `.exambox-red` - Light red background with red border
+- `.exambox-gray` - Light gray background with gray border
+
+**Styling:** Examboxes have rounded corners on the right side, square corners on the left, and a thicker left border (3pt) for visual emphasis.
+
+**Usage:**
+
+```markdown
+::: {.exambox-green}
+**Example Problem:** Calculate the following:
+
+- What is 2 + 2?
+- What is 5 × 3?
+- What is 10 ÷ 2?
+:::
+```
+
+Examboxes support full content including lists, code blocks, and nested formatting.
+
+### Answer Styling
+
+The `.answer` class provides subtle styling for marking answers in exams, with a light green background and darker green text.
+
+**Usage:**
+
+Inline answers:
+```markdown
+What is 2 + 2? [The answer is 4]{.answer}
+
+Who wrote "Hamlet"? [William Shakespeare]{.answer}
+```
+
+Block-level answers:
+```markdown
+::: {.answer}
+**Sample Solution:**
+
+Recursion is a programming technique where a function calls itself. It has:
+
+1. A base case that stops the recursion
+2. A recursive case that calls itself with modified arguments
+:::
+```
+
+Answer blocks preserve the structure of lists, code blocks, and other formatting within them.
+
+You can easily extend the Lua filter in `templates/exam-typst/_filters/exam-auto-header.lua` to add more custom styling options.
 
 ## Available Shortcodes
 

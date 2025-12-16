@@ -134,10 +134,17 @@ function Span(elem)
       ["highlight-orange"] = "rgb(255, 230, 200)",
     }
 
+    -- Answer styling (subtle background + text color)
+    local answer_style = {
+      bg = "rgb(245, 255, 245)",  -- very subtle light green background
+      fg = "rgb(50, 120, 50)"     -- darker green text
+    }
+
     -- Collect all styling attributes
     local size = nil
     local color = nil
     local highlight = nil
+    local is_answer = false
 
     for _, class in ipairs(elem.classes) do
       if size_map[class] then
@@ -146,11 +153,13 @@ function Span(elem)
         color = color_map[class]
       elseif highlight_map[class] then
         highlight = highlight_map[class]
+      elseif class == "answer" then
+        is_answer = true
       end
     end
 
     -- Build the Typst code with combined styling
-    if size or color or highlight then
+    if size or color or highlight or is_answer then
       -- First, recursively process nested content (this will handle nested Spans)
       local processed_content = pandoc.walk_inline(elem, {
         Span = Span,
@@ -166,6 +175,15 @@ function Span(elem)
       local open_tags = {}
       local close_tags = {}
 
+      -- Apply answer styling
+      if is_answer then
+        -- Answer gets subtle background box and text color
+        table.insert(open_tags, string.format("#box(fill: %s, outset: 2pt, radius: 2pt)[", answer_style.bg))
+        table.insert(open_tags, string.format("#text(fill: %s)[", answer_style.fg))
+        table.insert(close_tags, 1, "]")
+        table.insert(close_tags, 1, "]")
+      end
+
       -- Apply text styling (size and/or color) first
       if size or color then
         local params = {}
@@ -179,8 +197,8 @@ function Span(elem)
         table.insert(close_tags, 1, "]")  -- insert at beginning to close in reverse order
       end
 
-      -- Apply highlight (box) on top if needed
-      if highlight then
+      -- Apply highlight (box) on top if needed (but not if answer already applied)
+      if highlight and not is_answer then
         table.insert(open_tags, string.format("#box(fill: %s, outset: 2pt, radius: 2pt)[", highlight))
         table.insert(close_tags, 1, "]")
       end
@@ -241,10 +259,28 @@ function Div(elem)
       ["highlight-orange"] = "rgb(255, 230, 200)",
     }
 
+    -- Map exambox classes with their styling
+    local exambox_map = {
+      ["exambox"] = {fill = "rgb(240, 245, 255)", stroke = "rgb(100, 150, 255)"},
+      ["exambox-blue"] = {fill = "rgb(240, 245, 255)", stroke = "rgb(100, 150, 255)"},
+      ["exambox-green"] = {fill = "rgb(240, 255, 240)", stroke = "rgb(100, 200, 100)"},
+      ["exambox-yellow"] = {fill = "rgb(255, 255, 230)", stroke = "rgb(200, 180, 0)"},
+      ["exambox-red"] = {fill = "rgb(255, 240, 240)", stroke = "rgb(220, 100, 100)"},
+      ["exambox-gray"] = {fill = "rgb(245, 245, 245)", stroke = "rgb(150, 150, 150)"},
+    }
+
+    -- Answer styling (subtle background + text color)
+    local answer_style = {
+      bg = "rgb(245, 255, 245)",  -- very subtle light green background
+      fg = "rgb(50, 120, 50)"     -- darker green text
+    }
+
     -- Collect all styling attributes
     local size = nil
     local color = nil
     local highlight = nil
+    local exambox = nil
+    local is_answer = false
 
     for _, class in ipairs(elem.classes) do
       if size_map[class] then
@@ -253,35 +289,61 @@ function Div(elem)
         color = color_map[class]
       elseif highlight_map[class] then
         highlight = highlight_map[class]
+      elseif exambox_map[class] then
+        exambox = exambox_map[class]
+      elseif class == "answer" then
+        is_answer = true
       end
     end
 
     -- Build the Typst code with combined styling
     -- Use #set text() to preserve structure of lists, code blocks, etc.
-    if size or color or highlight then
+    if size or color or highlight or exambox or is_answer then
       local result = {}
       local open_parts = {}
       local close_parts = {}
 
-      -- Apply highlight (box) as outer wrapper if needed
-      if highlight then
+      -- Apply exambox as outer wrapper if needed
+      if exambox then
+        -- Exambox with rounded right corners, square left, thicker left edge
+        local exambox_code = string.format(
+          "#block(fill: %s, stroke: (left: 3pt + %s, rest: 0.5pt + %s), radius: (top-right: 6pt, bottom-right: 6pt, rest: 0pt), inset: 10pt, width: 100%%)[\n",
+          exambox.fill, exambox.stroke, exambox.stroke
+        )
+        table.insert(open_parts, exambox_code)
+        table.insert(close_parts, 1, "]")
+      end
+
+      -- Apply answer styling as wrapper if needed (and not already in exambox)
+      if is_answer and not exambox then
+        table.insert(open_parts, string.format("#block(fill: %s, inset: 8pt, radius: 3pt, width: 100%%)[\n", answer_style.bg))
+        table.insert(close_parts, 1, "]")
+      end
+
+      -- Apply highlight (box) as wrapper if needed (and not already in exambox or answer)
+      if highlight and not exambox and not is_answer then
         table.insert(open_parts, string.format("#box(fill: %s, inset: 8pt, radius: 4pt, width: 100%%)[\n", highlight))
         table.insert(close_parts, 1, "]")
       end
 
       -- Apply text styling (size and/or color) with set rules
-      if size or color then
+      if size or color or is_answer then
         local params = {}
         if size then
           table.insert(params, string.format("size: %s", size))
         end
         if color then
           table.insert(params, string.format("fill: %s", color))
+        elseif is_answer then
+          -- Apply answer text color if no other color is specified
+          table.insert(params, string.format("fill: %s", answer_style.fg))
         end
         -- Open a block and use set text to change styling within the scope
-        table.insert(open_parts, "#block[\n")
-        table.insert(open_parts, string.format("#set text(%s)\n", table.concat(params, ", ")))
-        table.insert(close_parts, 1, "]")
+        if #params > 0 then
+          table.insert(open_parts, "#block[\n")
+          table.insert(open_parts, string.format("#set text(%s)\n", table.concat(params, ", ")))
+          table.insert(close_parts, 1, "]")
+        end
       end
 
       -- Build result: opening code + original content + closing code
