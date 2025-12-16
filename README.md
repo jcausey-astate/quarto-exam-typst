@@ -112,6 +112,27 @@ You can combine multiple classes in any order to apply multiple styling effects:
 
 The order doesn't matter - `[text]{.red .large}` and `[text]{.large .red}` produce the same result.
 
+**Layout Width Classes:**
+
+The `.wide` and `.narrow` classes control the width of block-level elements (examboxes, answer blocks, and highlights). These override automatic width detection:
+
+- `.wide` - Forces full width (100%) regardless of current layout mode
+- `.narrow` - Forces narrow width (uses `exam-question-width` setting)
+
+These are useful when you want explicit control over box width:
+
+```markdown
+::: {.exambox-blue .wide}
+This exambox will be full width even inside a narrow section.
+:::
+
+::: {.answer .narrow}
+This answer block will be narrow width even inside a wide section.
+:::
+```
+
+Without these classes, boxes automatically adapt to their context: full width in wide sections, narrow in narrow sections.
+
 **Nesting Spans:**
 
 Spans can be nested arbitrarily deep. The styling is properly preserved:
@@ -167,7 +188,7 @@ The template provides `.exambox` classes for creating visually distinct boxes wi
 
 Examboxes support full content including lists, code blocks, and nested formatting.
 
-**Note:** When using `exam-question-display: narrow`, examboxes automatically constrain to the width specified by `exam-question-width` to align with other content in the left column.
+**Automatic Width Adaptation:** Examboxes automatically adapt their width to the current layout context. In narrow sections (or when `exam-question-display: narrow`), they use the width specified by `exam-question-width`. In wide sections, they use full width. Use `.wide` or `.narrow` classes to override this behavior.
 
 ### Answer Styling
 
@@ -196,7 +217,7 @@ Recursion is a programming technique where a function calls itself. It has:
 
 Answer blocks preserve the structure of lists, code blocks, and other formatting within them.
 
-**Note:** When using `exam-question-display: narrow`, answer blocks automatically constrain to the width specified by `exam-question-width` to align with other content in the left column.
+**Automatic Width Adaptation:** Answer blocks automatically adapt their width to the current layout context. In narrow sections (or when `exam-question-display: narrow`), they use the width specified by `exam-question-width`. In wide sections, they use full width. Use `.wide` or `.narrow` classes to override this behavior.
 
 You can easily extend the Lua filter in `templates/exam-typst/_filters/exam-auto-header.lua` to add more custom styling options.
 

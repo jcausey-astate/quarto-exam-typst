@@ -14,29 +14,24 @@ local shorthand_map = {
   ["{{end-wide}}"] = "])",
 }
 
--- This will be set based on exam-question-display parameter
-local box_width = "100%"  -- boxes default to full width; narrow mode changes this
-
--- Process metadata first to set box_width before processing document elements
-function Meta(meta)
-  -- Get exam-question-display and exam-question-width from metadata
-  local exam_question_display = "wide"  -- default
-  local exam_question_width = "2.37in"  -- default
-
-  if meta["exam-question-display"] then
-    exam_question_display = pandoc.utils.stringify(meta["exam-question-display"]):lower()
+-- Helper function to generate dynamic width code that respects layout context
+-- Returns two values: (needs_context, width_expr)
+-- If needs_context is true, the caller must wrap the block in a context expression
+-- and use the width_expr as the width value
+local function get_width_info(explicit_width)
+  if explicit_width == "100%" then
+    -- Explicit wide - no context needed
+    return false, "100%"
+  elseif explicit_width == "narrow" then
+    -- Explicit narrow width - needs context to get the state value
+    return true, "exam-question-width-state.get()"
+  elseif explicit_width then
+    -- Other explicit width (shouldn't happen, but handle it)
+    return false, explicit_width
+  else
+    -- Dynamic width - needs context to determine based on current mode
+    return true, "{ let mode = exam-question-display-state.get(); let fw = force-wide-state.get(); if mode == \"narrow\" and not fw { exam-question-width-state.get() } else { 100% } }"
   end
-
-  if meta["exam-question-width"] then
-    exam_question_width = pandoc.utils.stringify(meta["exam-question-width"]):lower()
-  end
-
-  -- Set box_width based on display mode
-  if exam_question_display == "narrow" then
-    box_width = exam_question_width
-  end
-
-  return meta
 end
 
 -- Escape special characters for pattern matching
@@ -303,6 +298,7 @@ function Div(elem)
     local highlight = nil
     local exambox = nil
     local is_answer = false
+    local explicit_width = nil  -- for .wide and .narrow classes
 
     for _, class in ipairs(elem.classes) do
       if size_map[class] then
@@ -315,6 +311,10 @@ function Div(elem)
         exambox = exambox_map[class]
       elseif class == "answer" then
         is_answer = true
+      elseif class == "wide" then
+        explicit_width = "100%"
+      elseif class == "narrow" then
+        explicit_width = "narrow"  -- marker for get_width_info to use narrow width
       end
     end
 
@@ -325,12 +325,22 @@ function Div(elem)
       local open_parts = {}
       local close_parts = {}
 
+      -- Check if we need context wrapping for width
+      local needs_context, width_expr = get_width_info(explicit_width)
+
+      -- If we need context, wrap in context block and compute width
+      if needs_context and (exambox or is_answer or highlight) then
+        table.insert(open_parts, string.format("#context { let _w = %s;\n", width_expr))
+        table.insert(close_parts, "}")
+      end
+
       -- Apply exambox as outer wrapper if needed
       if exambox then
         -- Exambox with rounded right corners, square left, thicker left edge
+        local width_val = needs_context and "_w" or width_expr
         local exambox_code = string.format(
-          "#block(fill: %s, stroke: (left: 3pt + %s, rest: 0.5pt + %s), radius: (top-right: 6pt, bottom-right: 6pt, rest: 0pt), inset: 10pt, width: %s)[\n",
-          exambox.fill, exambox.stroke, exambox.stroke, box_width
+          "block(fill: %s, stroke: (left: 3pt + %s, rest: 0.5pt + %s), radius: (top-right: 6pt, bottom-right: 6pt, rest: 0pt), inset: 10pt, width: %s)[\n",
+          exambox.fill, exambox.stroke, exambox.stroke, width_val
         )
         table.insert(open_parts, exambox_code)
         table.insert(close_parts, 1, "]")
@@ -338,13 +348,15 @@ function Div(elem)
 
       -- Apply answer styling as wrapper if needed (and not already in exambox)
       if is_answer and not exambox then
-        table.insert(open_parts, string.format("#block(fill: %s, inset: 8pt, radius: 3pt, width: %s)[\n", answer_style.bg, box_width))
+        local width_val = needs_context and "_w" or width_expr
+        table.insert(open_parts, string.format("block(fill: %s, inset: 8pt, radius: 3pt, width: %s)[\n", answer_style.bg, width_val))
         table.insert(close_parts, 1, "]")
       end
 
       -- Apply highlight (box) as wrapper if needed (and not already in exambox or answer)
       if highlight and not exambox and not is_answer then
-        table.insert(open_parts, string.format("#box(fill: %s, inset: 8pt, radius: 4pt, width: %s)[\n", highlight, box_width))
+        local width_val = needs_context and "_w" or width_expr
+        table.insert(open_parts, string.format("box(fill: %s, inset: 8pt, radius: 4pt, width: %s)[\n", highlight, width_val))
         table.insert(close_parts, 1, "]")
       end
 
@@ -459,8 +471,9 @@ function Pandoc(doc)
   end
 
   -- Create code to set the exam-question-display and exam-question-width state
+  -- Note: exam-question-display is a string, but exam-question-width must be a Typst length (unquoted)
   local state_code = string.format([[#exam-question-display-state.update("%s")
-#exam-question-width-state.update("%s")
+#exam-question-width-state.update(%s)
 ]], exam_question_display, exam_question_width)
 
   -- Create the exam header Typst code
