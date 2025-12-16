@@ -241,8 +241,6 @@ function Div(elem)
       ["highlight-orange"] = "rgb(255, 230, 200)",
     }
 
-    local content = pandoc.utils.stringify(elem.content)
-
     -- Collect all styling attributes
     local size = nil
     local color = nil
@@ -259,10 +257,19 @@ function Div(elem)
     end
 
     -- Build the Typst code with combined styling
+    -- Use #set text() to preserve structure of lists, code blocks, etc.
     if size or color or highlight then
-      local result = content
+      local result = {}
+      local open_parts = {}
+      local close_parts = {}
 
-      -- Apply text styling (size and/or color) first
+      -- Apply highlight (box) as outer wrapper if needed
+      if highlight then
+        table.insert(open_parts, string.format("#box(fill: %s, inset: 8pt, radius: 4pt, width: 100%%)[\n", highlight))
+        table.insert(close_parts, 1, "]")
+      end
+
+      -- Apply text styling (size and/or color) with set rules
       if size or color then
         local params = {}
         if size then
@@ -271,16 +278,28 @@ function Div(elem)
         if color then
           table.insert(params, string.format("fill: %s", color))
         end
-        result = string.format("#text(%s)[\n%s\n]", table.concat(params, ", "), result)
+        -- Open a block and use set text to change styling within the scope
+        table.insert(open_parts, "#block[\n")
+        table.insert(open_parts, string.format("#set text(%s)\n", table.concat(params, ", ")))
+        table.insert(close_parts, 1, "]")
       end
 
-      -- Apply highlight (box) on top if needed
-      if highlight then
-        result = string.format("#box(fill: %s, inset: 8pt, radius: 4pt, width: 100%%)[\n%s\n]",
-          highlight, result)
+      -- Build result: opening code + original content + closing code
+      if #open_parts > 0 then
+        table.insert(result, pandoc.RawBlock("typst", table.concat(open_parts, "")))
       end
 
-      return pandoc.RawBlock("typst", result)
+      -- Add original content blocks (preserve structure)
+      for _, block in ipairs(elem.content) do
+        table.insert(result, block)
+      end
+
+      -- Add closing code
+      if #close_parts > 0 then
+        table.insert(result, pandoc.RawBlock("typst", table.concat(close_parts, "\n")))
+      end
+
+      return result
     end
   end
   return elem

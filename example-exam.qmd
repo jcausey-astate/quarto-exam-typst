@@ -84,9 +84,15 @@ def mystery(arr):
 
 1. {{pts:5}} What sorting algorithm does this implement?
 
+::: {.blue}
+* This is a list
+   * Does it render as a list?
+* It should be a bulleted list, but blue!
+:::
+
    {{lblank}}
 
-2. {{pts:10}} What is the time complexity? [Explain your reasoning.]{.large .highlight}
+1. {{pts:10}} What is the time complexity? [Explain your reasoning.]{.large .highlight}
 
 {{vf}}
 
