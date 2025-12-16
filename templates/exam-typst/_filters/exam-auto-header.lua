@@ -266,6 +266,7 @@ function Div(elem)
       ["exambox-green"] = {fill = "rgb(240, 255, 240)", stroke = "rgb(100, 200, 100)"},
       ["exambox-yellow"] = {fill = "rgb(255, 255, 230)", stroke = "rgb(200, 180, 0)"},
       ["exambox-red"] = {fill = "rgb(255, 240, 240)", stroke = "rgb(220, 100, 100)"},
+      ["exambox-orange"] = {fill = "rgb(255, 245, 230)", stroke = "rgb(220, 140, 60)"},
       ["exambox-gray"] = {fill = "rgb(245, 245, 245)", stroke = "rgb(150, 150, 150)"},
     }
 

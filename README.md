@@ -1,6 +1,12 @@
 # Quarto Typst Exam Template
 
-This is a Quarto typst template for creating exam papers, converted from the original LaTeX template.
+This is a Quarto typst template for creating exam papers.  
+
+It supports a "normal" (we call it "wide") mode where questions go edge-to-edge, and a "narrow" mode where questions are in a narrow column on the left to allow room for answers to the right.
+
+There are also many helper features for performing formatting tasks that are helpful for paper exams.
+
+Of course, all of Quarto's built-in Markdown extensions, shortcode, etc. are at your disposal as well.
 
 ## Files
 
@@ -8,7 +14,7 @@ This is a Quarto typst template for creating exam papers, converted from the ori
 - `templates/exam-typst/typst-show.typ` - Document formatting (no page numbers, heading styles)
 - `templates/exam-typst/exam-header.typ` - Exam header generator (title, subtitle, name field, instructions)
 - `templates/exam-typst/_filters/exam-auto-header.lua` - Lua filter that auto-generates exam header from YAML metadata
-- `example-exam.qmd` - Example exam demonstrating all features
+- `example-exam.qmd` - Example exam demonstrating common features
 
 ## Quick Start
 
@@ -17,11 +23,11 @@ This is a Quarto typst template for creating exam papers, converted from the ori
 ```yaml
 ---
 title: "Your Exam Title"
-subtitle: "Semester Year"
+subtitle: "Your Subtitle"
 exam-noname: false
 exam-noinstructions: false
-exam-titlesize: 20pt
-exam-subtitlesize: 14pt
+exam-titlesize: 14pt
+exam-subtitlesize: 12pt
 format:
   typst:
     papersize: us-letter
@@ -42,12 +48,11 @@ filters:
 2. Write your exam content using shortcode syntax:
 
 ```markdown
-## Question 1 {{pts:10}}
+@. {{pts:5}} Your question here.
 
-Write your question here. {{ptseach:5}}
-
-1. Part a
-2. Part b
+@. {{ptseach:5}} Here is a question with parts:
+  a) Part a
+  b) Part b
 
 {{vf}}
 ```
@@ -76,7 +81,7 @@ This creates a highlighted box with pale blue background.
 
 ### Available Classes
 
-**Text Sizes:**
+**Text Sizes:**  These size classes are designed to be similar to LaTeX.
 
 - `.tiny` - 7pt
 - `.small` - 8pt
@@ -145,9 +150,8 @@ The template provides `.exambox` classes for creating visually distinct boxes wi
 - `.exambox-green` - Light green background with green border
 - `.exambox-yellow` - Light yellow background with yellow border
 - `.exambox-red` - Light red background with red border
+- `.exambox-orange` - Light orange background with orange border
 - `.exambox-gray` - Light gray background with gray border
-
-**Styling:** Examboxes have rounded corners on the right side, square corners on the left, and a thicker left border (3pt) for visual emphasis.
 
 **Usage:**
 
@@ -218,7 +222,6 @@ Choose the best answer. {{ptseach:4}}
 **Spacing & Page Breaks:**
 
 - `{{vf}}` - Vertical fill (expands to fill available space)
-- `{{pagebreak}}` - Page break
 
 **Answer Blanks** (render inline with text):
 
@@ -233,7 +236,7 @@ Choose the best answer. {{ptseach:4}}
 The velocity is {{sblank}} m/s and the temperature is {{ssblank}} degrees.
 ```
 
-This renders as: "The velocity is ___ m/s and the temperature is _?_ degrees."
+This renders as: "The velocity is ___ m/s and the temperature is \_?\_ degrees."
 
 **Layout Modes:**
 
@@ -347,29 +350,6 @@ quarto render your-exam.qmd
 
 This will generate a PDF file with your exam.
 
-## Migration from LaTeX Template
-
-If you're migrating from the LaTeX template, use these shortcode equivalents:
-
-| LaTeX Command | Recommended Shortcode | Alternative Typst Syntax |
-|---------------|----------------------|--------------------------|
-| `\pts{N}` | `{{pts:N}}` | `` `#pts([N])`{=typst} `` |
-| `\ptseach{N}` | `{{ptseach:N}}` | `` `#ptseach([N])`{=typst} `` |
-| `\blank` | `{{blank}}` or `{{ssblank}}` | `` `#blank()`{=typst} `` |
-| `\sblank` | `{{sblank}}` | `` `#sblank()`{=typst} `` |
-| `\lblank` | `{{lblank}}` | `` `#lblank()`{=typst} `` |
-| `\vf` | `{{vf}}` | `` `#vf()`{=typst} `` |
-| `\pagebreak` | `{{pagebreak}}` | `` `#pagebreak()`{=typst} `` |
-| `\wide` | `{{begin-wide}}` ... `{{end-wide}}` | `` `#wide([content])`{=typst} `` |
-| `\narrow` | `{{begin-narrow}}` ... `{{end-narrow}}` | `` `#narrow([content])`{=typst} `` |
-
-### Notes on Migration
-
-- **Shortcodes**: The new shortcode syntax (`{{keyword}}` and `{{keyword:N}}`) is cleaner and easier to read than the verbose Typst syntax
-- **Inline Blanks**: Blank shortcodes now render properly inline with text (this was fixed to match LaTeX behavior)
-- **Unicode**: Typst has excellent built-in Unicode support, so no special setup is needed for symbols and emoji
-- **Code Highlighting**: Quarto handles syntax highlighting automatically for code blocks
-
 ## Customization
 
 You can customize the appearance by:
@@ -379,6 +359,12 @@ You can customize the appearance by:
 3. Modifying `templates/exam-typst/exam-header.typ` to change header appearance
 4. Adjusting margins and fonts in the YAML frontmatter
 
-## Known Limitations
 
-Currently no known limitations. All LaTeX template features have been ported to Typst.
+## MIT License
+Copyright 2025 Jason L Causey, Arkansas State University
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.

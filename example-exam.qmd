@@ -56,6 +56,10 @@ Answer each question in 2-3 sentences. {{ptseach:10}}
    * Consider the space and time complexity
    * Consider usage patterns
 
+::: {.exambox-orange}
+Did you consider real-world applications?
+:::
+
 {{vf}}
 
 2. {{pts:10}} What is a hash collision and how can it be resolved?
@@ -66,7 +70,7 @@ Answer each question in 2-3 sentences. {{ptseach:10}}
 
 {{vf}}
 
-{{pagebreak}}
+{{< pagebreak >}}
 
 ## Part 3: Code Analysis {{pts:25}}
 
@@ -122,7 +126,7 @@ def reverse_list(head):
 {{vf}}
 {{vf}}
 
-{{pagebreak}}
+{{< pagebreak >}}
 
 ## Part 5: Quick Calculations {{pts:15}}
 
