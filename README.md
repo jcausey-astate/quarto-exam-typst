@@ -2,19 +2,11 @@
 
 This is a Quarto Typst template for creating exam papers.
 
-It supports two layout modes: **wide mode** (full-width, default) for sections without handwritten answers, and **narrow mode** where questions are in a narrow left column to allow room for handwritten answers on the right.
-
 The template includes helper features for common exam tasks: point values, answer blanks, styled boxes, answer keys, and more.
 
+This template supports two layout modes: **wide mode** (full-width, default) which allows questions/instructions to use the entire width of the page, and **narrow mode** where questions are confined to a narrow left column, providing test takers plenty of open writing area to the right.
+
 Of course, all of Quarto's built-in Markdown extensions, shortcodes, etc. are at your disposal as well.
-
-## Files
-
-- `_extensions/exam/typst-template.typ` - Helper functions for exams (points, blanks, vertical fill)
-- `_extensions/exam/typst-show.typ` - Document formatting (no page numbers, heading styles)
-- `_extensions/exam/exam-header.typ` - Exam header generator (title, subtitle, name field, instructions)
-- `_extensions/exam/_filters/exam-auto-header.lua` - Lua filter that auto-generates exam header from YAML metadata
-- `example-exam.qmd` - Example exam demonstrating common features
 
 ## Quick Start
 
@@ -376,8 +368,8 @@ Configure the exam header using these YAML frontmatter variables:
 
 - `title` - Exam title (string)
 - `subtitle` - Exam subtitle (string)
-- `exam-titlesize` - Title font size (default: 20pt)
-- `exam-subtitlesize` - Subtitle font size (default: 14pt)
+- `exam-titlesize` - Title font size (default: 14pt)
+- `exam-subtitlesize` - Subtitle font size (default: 12pt)
 - `exam-noname` - Hide the name field (default: false)
 - `exam-noinstructions` - Hide the instructions (default: false)
 - `instructions` - Custom exam instructions (string). If not specified, default instructions are used.
@@ -404,8 +396,8 @@ subtitle: "Spring 2025"
 exam-noname: false
 exam-noinstructions: false
 instructions: "Answer all questions in the spaces provided. You may use a calculator but not other resources."
-exam-titlesize: 20pt
-exam-subtitlesize: 14pt
+exam-titlesize: 14pt
+exam-subtitlesize: 12pt
 exam-question-display: narrow
 exam-question-width: 3.5in
 ```
@@ -415,6 +407,16 @@ exam-question-width: 3.5in
 See `example-exam.qmd` for a complete working example.
 
 ## Customization
+
+### Files
+The extension makes use of the following files, each of which can be customized if needed:
+
+- `_extensions/exam/typst-template.typ` - Helper functions for exams (points, blanks, vertical fill)
+- `_extensions/exam/typst-show.typ` - Document formatting (no page numbers, heading styles)
+- `_extensions/exam/exam-header.typ` - Exam header generator (title, subtitle, name field, instructions)
+- `_extensions/exam/_filters/exam-auto-header.lua` - Lua filter that auto-generates exam header from YAML metadata
+- `example-exam.qmd` - Example exam demonstrating common features
+
 
 You can customize the appearance by:
 

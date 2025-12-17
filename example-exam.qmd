@@ -1,6 +1,6 @@
 ---
 title: "Data Structures Midterm Exam"
-subtitle: "Fall 2025 • CS 3213"
+subtitle: "(Example Exam)"
 format:
   exam-typst:
     papersize: us-letter

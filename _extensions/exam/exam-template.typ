@@ -79,30 +79,35 @@
   }
 }
 // Exam header generator
-// Usage: #exam-header(title: "My Exam", subtitle: "Spring 2025", ...)
-
-// Import the force-wide-state from typst-template.typ
-// Import removed - available via template-partials concatenation
-// #import "typst-template.typ": force-wide-state
+// Usage: #exam-header(title: "My Exam", subtitle: "Spring", ...)
 
 #let exam-header(
   title: none,
   subtitle: none,
-  titlesize: 20pt,
-  subtitlesize: 14pt,
+  titlesize: "",
+  subtitlesize: "",
   noname: false,
   noinstructions: false,
   instructions: none,
 ) = {
   v(0.05in)
 
-  // Title
+  // pull fontsize from Quarto if available
+  $if(fontsize)$
+  let fontsize=$fontsize$
+  $else$
+  let fontsize=11pt
+  $endif$
+
+  // Title; size defaults to fontsize + 3pt unless explicitly specified.
+  titlesize = if titlesize != none {titlesize} else {fontsize+3pt}
   if title != none [
     #text(size: titlesize, weight: "regular", title)
     #linebreak()
   ]
 
-  // Subtitle
+  // Subtitle; size defaults to fontsize + 1pt unless explicitly specified.
+  subtitlesize = if subtitlesize != none {subtitlesize} else {fontsize+1pt}
   if subtitle != none [
     #v(-0.5em)
     #text(size: subtitlesize, weight: "regular", subtitle)
@@ -123,7 +128,7 @@
 
   // Instructions (always render in full width, regardless of exam-question-display)
   if not noinstructions {
-    let instr = if instructions != none {
+    let instr = if instructions != "" {
       instructions
     } else {
       [Read each question carefully and fully before answering. Answer all questions using complete sentences unless the question specifies otherwise. Explain your thoughts and provide any necessary context; supporting examples, code, formulas, etc. are encouraged. Clearly state any additional assumptions you make in forming your responses; always be as specific as possible.]

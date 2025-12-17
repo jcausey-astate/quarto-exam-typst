@@ -433,8 +433,8 @@ function Pandoc(doc)
   local subtitle = ""
   local exam_noname_str = "false"
   local exam_noinstructions_str = "false"
-  local exam_titlesize = "20pt"
-  local exam_subtitlesize = "14pt"
+  local exam_titlesize = "none"
+  local exam_subtitlesize = "none"
   local exam_question_display = "wide"  -- default to wide
   local exam_question_width = "2.37in"  -- default width
   local instructions = ""
@@ -482,11 +482,11 @@ function Pandoc(doc)
 ]], exam_question_display, exam_question_width)
 
   -- Create the exam header Typst code
-  local instructions_param = ""
   if instructions ~= "" then
     -- Escape quotes and newlines for Typst string
-    instructions_param = string.format(',\n  instructions: "%s"',
-      instructions:gsub('"', '\\"'):gsub('\n', '\\n'))
+    instructions = instructions:gsub('"', '\\"'):gsub('\n', '\\n')
+  else
+    instructions = "\"\""
   end
 
   local header_code = string.format([[#exam-header(
@@ -495,7 +495,8 @@ function Pandoc(doc)
   titlesize: %s,
   subtitlesize: %s,
   noname: %s,
-  noinstructions: %s%s,
+  noinstructions: %s,
+  instructions: %s
 )]],
     title:gsub('"', '\\"'):gsub('\n', '\\n'),
     subtitle:gsub('"', '\\"'):gsub('\n', '\\n'),
@@ -503,7 +504,7 @@ function Pandoc(doc)
     exam_subtitlesize,
     exam_noname_str,
     exam_noinstructions_str,
-    instructions_param
+    instructions
   )
 
   -- Create RawBlocks
@@ -511,11 +512,11 @@ function Pandoc(doc)
   local header_block = pandoc.RawBlock("typst", header_code)
 
   -- Insert at beginning of document
-  table.insert(doc.blocks, 1, header_block)
   table.insert(doc.blocks, 1, state_block)  -- state must come before header
+  table.insert(doc.blocks, 1, header_block)
+  
 
   -- No need to wrap the document - the show rules in typst-show.typ handle it
-
   return doc
 end
 
