@@ -28,7 +28,7 @@
 #let vf() = v(1fr)
 
 // State variable to track the default question width mode
-#let exam-question-display-state = state("exam-question-display", "wide")
+#let exam-question-layout-state = state("exam-question-layout", "wide")
 
 // State variable to track the question column width (in narrow mode)
 #let exam-question-width-state = state("exam-question-width", 2.37in)
@@ -41,12 +41,12 @@
 
 // Layout modes for answer space
 // These functions now work by adjusting the width of content blocks
-// The default width is controlled by the exam-question-display-state
+// The default width is controlled by the exam-question-layout-state
 
 // Wide mode: content spans full page width
 #let wide(content) = {
   context {
-    let mode = exam-question-display-state.get()
+    let mode = exam-question-layout-state.get()
     if mode == "narrow" {
       // In narrow-default mode, "wide" blocks need to override the narrow show rules
       // Use force-wide-state to signal that content should be full width
@@ -64,7 +64,7 @@
 // Default left column width is 2.37in (matching LaTeX template)
 #let narrow(columnwidth: 2.37in, content) = {
   context {
-    let mode = exam-question-display-state.get()
+    let mode = exam-question-layout-state.get()
     if mode == "narrow" {
       // In narrow-default mode, this is a no-op (already narrow by default)
       content
@@ -126,7 +126,7 @@
 
   v(0.1in)
 
-  // Instructions (always render in full width, regardless of exam-question-display)
+  // Instructions (always render in full width, regardless of exam-question-layout)
   if not noinstructions {
     let instr = if instructions != "" {
       instructions
@@ -192,7 +192,7 @@
   // This allows pagebreaks to work since we're not wrapping in blocks
   show par: it => {
     context {
-      let mode = exam-question-display-state.get()
+      let mode = exam-question-layout-state.get()
       let force_wide = force-wide-state.get()
       if mode == "narrow" and not force_wide {
         block(width: exam-question-width-state, it)
@@ -204,7 +204,7 @@
 
   show heading: it => {
     context {
-      let mode = exam-question-display-state.get()
+      let mode = exam-question-layout-state.get()
       let force_wide = force-wide-state.get()
       if mode == "narrow" and not force_wide {
         block(width: exam-question-width-state, it)
@@ -216,7 +216,7 @@
 
   show enum: it => {
     context {
-      let mode = exam-question-display-state.get()
+      let mode = exam-question-layout-state.get()
       let force_wide = force-wide-state.get()
       let width_constraint = if mode == "narrow" and not force_wide { exam-question-width-state } else { 100% }
 
@@ -267,7 +267,7 @@
 
   show list: it => {
     context {
-      let mode = exam-question-display-state.get()
+      let mode = exam-question-layout-state.get()
       let force_wide = force-wide-state.get()
       let width_constraint = if mode == "narrow" and not force_wide { exam-question-width-state } else { 100% }
 
@@ -297,7 +297,7 @@
       radius: 2pt
     )
     context {
-      let mode = exam-question-display-state.get()
+      let mode = exam-question-layout-state.get()
       let force_wide = force-wide-state.get()
       if mode == "narrow" and not force_wide {
         // In narrow mode, constrain the block width

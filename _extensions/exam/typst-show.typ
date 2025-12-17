@@ -33,7 +33,7 @@
   // This allows pagebreaks to work since we're not wrapping in blocks
   show par: it => {
     context {
-      let mode = exam-question-display-state.get()
+      let mode = exam-question-layout-state.get()
       let force_wide = force-wide-state.get()
       if mode == "narrow" and not force_wide {
         block(width: exam-question-width-state, it)
@@ -45,7 +45,7 @@
 
   show heading: it => {
     context {
-      let mode = exam-question-display-state.get()
+      let mode = exam-question-layout-state.get()
       let force_wide = force-wide-state.get()
       if mode == "narrow" and not force_wide {
         block(width: exam-question-width-state, it)
@@ -57,7 +57,7 @@
 
   show enum: it => {
     context {
-      let mode = exam-question-display-state.get()
+      let mode = exam-question-layout-state.get()
       let force_wide = force-wide-state.get()
       let width_constraint = if mode == "narrow" and not force_wide { exam-question-width-state } else { 100% }
 
@@ -108,7 +108,7 @@
 
   show list: it => {
     context {
-      let mode = exam-question-display-state.get()
+      let mode = exam-question-layout-state.get()
       let force_wide = force-wide-state.get()
       let width_constraint = if mode == "narrow" and not force_wide { exam-question-width-state } else { 100% }
 
@@ -138,7 +138,7 @@
       radius: 2pt
     )
     context {
-      let mode = exam-question-display-state.get()
+      let mode = exam-question-layout-state.get()
       let force_wide = force-wide-state.get()
       if mode == "narrow" and not force_wide {
         // In narrow mode, constrain the block width

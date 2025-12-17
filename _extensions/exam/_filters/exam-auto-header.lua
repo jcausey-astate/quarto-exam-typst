@@ -1,7 +1,7 @@
 -- Auto-generate exam header from YAML metadata
 -- Also provides shorthand syntax for common Typst exam functions
 
--- Default mapping of shorthand syntax to Typst code (when exam-question-display is "wide" or unset)
+-- Default mapping of shorthand syntax to Typst code (when exam-question-layout is "wide" or unset)
 local shorthand_map = {
   ["{{vf}}"] = "#vf()",
   ["{{sblank}}"] = "#sblank()",
@@ -30,7 +30,7 @@ local function get_width_info(explicit_width)
     return false, explicit_width
   else
     -- Dynamic width - needs context to determine based on current mode
-    return true, "{ let mode = exam-question-display-state.get(); let fw = force-wide-state.get(); if mode == \"narrow\" and not fw { exam-question-width-state.get() } else { 100% } }"
+    return true, "{ let mode = exam-question-layout-state.get(); let fw = force-wide-state.get(); if mode == \"narrow\" and not fw { exam-question-width-state.get() } else { 100% } }"
   end
 end
 
@@ -463,8 +463,8 @@ function Pandoc(doc)
     exam_subtitlesize = pandoc.utils.stringify(doc.meta["exam-subtitlesize"])
   end
 
-  if doc.meta["exam-question-display"] then
-    exam_question_display = pandoc.utils.stringify(doc.meta["exam-question-display"]):lower()
+  if doc.meta["exam-question-layout"] then
+    exam_question_display = pandoc.utils.stringify(doc.meta["exam-question-layout"]):lower()
   end
 
   if doc.meta["exam-question-width"] then
@@ -475,9 +475,9 @@ function Pandoc(doc)
     instructions = pandoc.utils.stringify(doc.meta.instructions)
   end
 
-  -- Create code to set the exam-question-display and exam-question-width state
-  -- Note: exam-question-display is a string, but exam-question-width must be a Typst length (unquoted)
-  local state_code = string.format([[#exam-question-display-state.update("%s")
+  -- Create code to set the exam-question-layout and exam-question-width state
+  -- Note: exam-question-layout is a string, but exam-question-width must be a Typst length (unquoted)
+  local state_code = string.format([[#exam-question-layout-state.update("%s")
 #exam-question-width-state.update(%s)
 ]], exam_question_display, exam_question_width)
 

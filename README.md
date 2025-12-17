@@ -60,7 +60,7 @@ Common shortcodes you'll use most often:
 | `{{ptseach:N}}` | Point value for each item | `{{ptseach:5}}` → "(5 pts each)" |
 | `{{vf}}` | Vertical fill (expands to fill space) | Use after questions needing answer space |
 | `{{begin-narrow}}` ... `{{end-narrow}}` | Narrow layout for handwritten answers | Wrap sections needing answer space |
-| `{{begin-wide}}` ... `{{end-wide}}` | Full-width layout | Use when `exam-question-display: narrow` |
+| `{{begin-wide}}` ... `{{end-wide}}` | Full-width layout | Use when `exam-question-layout: narrow` |
 | `{{sblank}}` | Small blank line | `{{sblank}}` → ___ |
 | `{{lblank}}` | Large blank line | `{{lblank}}` → __________ |
 
@@ -113,17 +113,17 @@ Set the default in your YAML frontmatter:
 
 ```yaml
 ---
-exam-question-display: wide    # Default: full-width layout
+exam-question-layout: wide    # Default: full-width layout
 # OR
-exam-question-display: narrow  # Default: narrow layout with answer space
+exam-question-layout: narrow  # Default: narrow layout with answer space
 exam-question-width: 3.27in     # Width of question column in narrow mode
 ---
 ```
 
 **Switching modes within your exam:**
 
-- When `exam-question-display: wide` (default), use `{{begin-narrow}}...{{end-narrow}}` to create sections with answer space
-- When `exam-question-display: narrow`, use `{{begin-wide}}...{{end-wide}}` to create full-width sections
+- When `exam-question-layout: wide` (default), use `{{begin-narrow}}...{{end-narrow}}` to create sections with answer space
+- When `exam-question-layout: narrow`, use `{{begin-wide}}...{{end-wide}}` to create full-width sections
 
 **Example (using default wide mode with a narrow section):**
 
@@ -305,7 +305,7 @@ The template provides `.exambox` classes for creating visually distinct boxes wi
 
 Examboxes support full content including lists, code blocks, and nested formatting.
 
-**Automatic Width Adaptation:** Examboxes automatically adapt their width to the current layout context. In narrow sections (or when `exam-question-display: narrow`), they use the width specified by `exam-question-width`. In wide sections, they use full width. Use `.wide` or `.narrow` classes to override this behavior.
+**Automatic Width Adaptation:** Examboxes automatically adapt their width to the current layout context. In narrow sections (or when `exam-question-layout: narrow`), they use the width specified by `exam-question-width`. In wide sections, they use full width. Use `.wide` or `.narrow` classes to override this behavior.
 
 ### Answer Styling
 
@@ -334,7 +334,7 @@ Recursion is a programming technique where a function calls itself. It has:
 
 Answer blocks preserve the structure of lists, code blocks, and other formatting within them.
 
-**Automatic Width Adaptation:** Answer blocks automatically adapt their width to the current layout context. In narrow sections (or when `exam-question-display: narrow`), they use the width specified by `exam-question-width`. In wide sections, they use full width. Use `.wide` or `.narrow` classes to override this behavior.
+**Automatic Width Adaptation:** Answer blocks automatically adapt their width to the current layout context. In narrow sections (or when `exam-question-layout: narrow`), they use the width specified by `exam-question-width`. In wide sections, they use full width. Use `.wide` or `.narrow` classes to override this behavior.
 
 You can easily extend the Lua filter in `_extensions/exam/_filters/exam-auto-header.lua` to add more custom styling options.
 
@@ -373,8 +373,8 @@ Configure the exam header using these YAML frontmatter variables:
 - `exam-noname` - Hide the name field (default: false)
 - `exam-noinstructions` - Hide the instructions (default: false)
 - `instructions` - Custom exam instructions (string). If not specified, default instructions are used.
-- `exam-question-display` - Default question display style: "wide" or "narrow" (default: "wide")
-- `exam-question-width` - Specific width of question column when in "narrow" question style. (No effect when in "wide" display style.)
+- `exam-question-layout` - Default question layout style: "wide" or "narrow" (default: "wide")
+- `exam-question-width` - Specific width of question column when in "narrow" question style. (No effect when in "wide" layout style.)
 
 ### Custom Instructions
 
@@ -398,7 +398,7 @@ exam-noinstructions: false
 instructions: "Answer all questions in the spaces provided. You may use a calculator but not other resources."
 exam-titlesize: 14pt
 exam-subtitlesize: 12pt
-exam-question-display: narrow
+exam-question-layout: narrow
 exam-question-width: 3.5in
 ```
 
