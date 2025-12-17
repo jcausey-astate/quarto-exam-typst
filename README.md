@@ -1,10 +1,12 @@
 # Quarto Typst Exam Template
 
-This is a Quarto Typst template for creating exam papers.
+This is a [Quarto](https://quarto.org/) Typst template for creating exam papers.
 
 The template includes helper features for common exam tasks: point values, answer blanks, styled boxes, answer keys, and more.
 
 This template supports two layout modes: **wide mode** (full-width, default) which allows questions/instructions to use the entire width of the page, and **narrow mode** where questions are confined to a narrow left column, providing test takers plenty of open writing area to the right.
+
+![](images/layouts-side-by-side.png)
 
 Of course, all of Quarto's built-in Markdown extensions, shortcodes, etc. are at your disposal as well.
 
@@ -13,13 +15,13 @@ Of course, all of Quarto's built-in Markdown extensions, shortcodes, etc. are at
 1. **Install the template** by creating a new Quarto project:
 
    ```bash
-   quarto use template jcausey/quarto-typst-exam-template
+   quarto use template jcausey-astate/quarto-exam-typst
    ```
 
    Or add it to an existing project:
 
    ```bash
-   quarto add jcausey/quarto-typst-exam-template
+   quarto add jcausey-astate/quarto-exam-typst
    ```
 
 2. **Create your exam** in a `.qmd` file:
@@ -116,7 +118,7 @@ Set the default in your YAML frontmatter:
 exam-question-layout: wide    # Default: full-width layout
 # OR
 exam-question-layout: narrow  # Default: narrow layout with answer space
-exam-question-width: 3.27in     # Width of question column in narrow mode
+exam-question-width:  3.27in  # Width of question column in narrow mode
 ---
 ```
 
@@ -151,7 +153,6 @@ These questions have writing space on the right.
 
 2. {{pts:20}} Describe three sorting algorithms.
 
-{{vf}}
 {{vf}}
 
 {{end-narrow}}
