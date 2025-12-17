@@ -1,148 +1,186 @@
 ---
-title: "Data Structures Final Exam"
-subtitle: "Spring 2025"
-exam-noname: false
-exam-noinstructions: false
-exam-titlesize: 14pt
-exam-subtitlesize: 12pt
-exam-question-display: narrow
-exam-question-width: 3.33in
+title: "Data Structures Midterm Exam"
+subtitle: "Fall 2025 • CS 3213"
 format:
   exam-typst:
     papersize: us-letter
     margin:
-      x: 2cm
-      y: 2cm
-    fontsize: 10pt
+      x: 0.75in
+      y: 0.75in
+    fontsize: 11pt
 ---
 
-## Part 1: Multiple Choice {{pts:20}}
+## Part 1: Multiple Choice {{pts:24}}
 
 Choose the best answer for each question. {{ptseach:4}}
 
-1. {{pts:4}} What is the time complexity of searching in a balanced binary search tree?
+1. What is the worst-case time complexity of searching in a balanced binary search tree?
 
-   a. O(n) \
-   b. O(log n) ★ \
-   c. O(n²) \
-   d. O(1)
+   a. O(1) \
+   b. O(log n) \
+   c. O(n) \
+   d. O(n log n)
 
-2. {{pts:4}} Which data structure uses LIFO (Last In, First Out) ordering?
+2. Which data structure would be most efficient for implementing a browser's back button?
 
    a. Queue \
-   b. Stack ★ \
-   c. Array \
-   d. Linked List
+   b. Stack \
+   c. Binary tree \
+   d. Hash table
 
-3. {{pts:4}} What is the worst-case time complexity of QuickSort?
+3. What is the primary advantage of a linked list over an array?
 
-   a. O(n log n) \
-   b. O(n) \
-   c. O(n²) ★ \
-   d. O(log n)
+   a. Faster random access \
+   b. Better cache locality \
+   c. Dynamic size without reallocation \
+   d. Less memory overhead
+
+4. In a max heap, where is the largest element always located?
+
+   a. At the root \
+   b. At a leaf node \
+   c. In the middle level \
+   d. At any position
+
+5. What is the average-case time complexity of hash table lookups with a good hash function?
+
+   a. O(1) \
+   b. O(log n) \
+   c. O(n) \
+   d. O(n²)
+
+6. Which traversal of a binary search tree visits nodes in sorted order?
+
+   a. Pre-order \
+   b. In-order \
+   c. Post-order \
+   d. Level-order
 
 {{vf}}
 
-## Part 2: Short Answer {{pts:30}}
+## Part 2: Fill in the Blank {{pts:16}}
 
-Answer each question in 2-3 sentences. {{ptseach:10}}
+Complete each statement with the appropriate term. {{ptseach:2}}
 
-1. {{pts:10}} Explain the difference between a stack and a queue.
-   * Consider the space and time complexity
-   * Consider usage patterns
+1. A __________ is a linear data structure that follows FIFO (First In, First Out) ordering. {{sblank}}
 
-::: {.exambox-orange}
-Did you consider real-world applications?
-:::
+2. The operation that adds an element to a stack is called {{sblank}}, while removing an element is called {{sblank}}.
 
-{{vf}}
+3. In a binary tree, a node with no children is called a {{sblank}} node.
 
-2. {{pts:10}} What is a hash collision and how can it be resolved?
+4. The process of visiting all nodes in a tree is called {{sblank}}.
 
-{{vf}}
+5. A {{sblank}} is a special tree-based data structure that satisfies the heap property.
 
-3. {{pts:10}} Describe the purpose of a linked list and give one advantage over arrays.
+6. The {{sblank}} of a tree is the length of the longest path from root to a leaf.
 
 {{vf}}
 
 {{< pagebreak >}}
 
-## Part 3: Code Analysis {{pts:25}}
+{{begin-narrow}}
+
+## Part 3: Short Answer {{pts:30}}
+
+Answer each question in the space provided. Write clearly and concisely. {{ptseach:10}}
+
+1. {{pts:10}} Explain the difference between a stack and a queue. Give one real-world application for each.
+
+{{vf}}
+
+2. {{pts:10}} What is a hash collision? Describe one method for handling hash collisions.
+
+{{vf}}
+
+3. {{pts:10}} Explain why binary search requires a sorted array. What happens if the array is not sorted?
+
+{{vf}}
+
+{{end-narrow}}
+
+{{< pagebreak >}}
+
+## Part 4: Algorithm Analysis {{pts:20}}
+
+::: {.exambox-blue}
+**Reference: Big O Complexity Classes**
+
+- **O(1)** - Constant time
+- **O(log n)** - Logarithmic time
+- **O(n)** - Linear time
+- **O(n log n)** - Linearithmic time
+- **O(n²)** - Quadratic time
+:::
 
 Consider the following Python function:
 
 ```python
-def mystery(arr):
-    if len(arr) <= 1:
-        return arr
-    mid = len(arr) // 2
-    left = mystery(arr[:mid])
-    right = mystery(arr[mid:])
-    return merge(left, right)
+def find_duplicates(arr):
+    duplicates = []
+    for i in range(len(arr)):
+        for j in range(i + 1, len(arr)):
+            if arr[i] == arr[j] and arr[i] not in duplicates:
+                duplicates.append(arr[i])
+    return duplicates
 ```
 
-1. {{pts:5}} What sorting algorithm does this implement?
+{{begin-narrow}}
 
-::: {.blue}
-* This is a list
-   * Does it render as a list?
-* It should be a bulleted list, but blue!
-:::
-
-   {{lblank}}
-
-1. {{pts:10}} What is the time complexity? [Explain your reasoning.]{.large .highlight}
+1. {{pts:8}} What is the time complexity of this function? Explain your reasoning.
 
 {{vf}}
 
-3. {{pts:10}} What is the space complexity?
-
-{{vf}}
-
-## Part 4: Implementation {{pts:25}}
-
-Implement a function that reverses a singly linked list in-place.
-
-[*Requirements:*\
-★ Must modify in-place ([O(1) space]{.blue})\
-★ Must run in O(n) time]{.small}
-
-```python
-class Node:
-    def __init__(self, data):
-        self.data = data
-        self.next = None
-
-def reverse_list(head):
-    # Your implementation here
-    pass
-```
+2. {{pts:12}} Describe how you could improve the time complexity using a different data structure. What would the new time complexity be?
 
 {{vf}}
 {{vf}}
+
+{{end-narrow}}
 
 {{< pagebreak >}}
 
-## Part 5: Quick Calculations {{pts:15}}
+## Part 5: Implementation {{pts:10}}
 
-{{begin-wide}}
+::: {.exambox-green}
+**Example: Reversing a String**
 
-Answer the following in the space provided to the right.
+```python
+def reverse_string(s):
+    return s[::-1]
 
-1. {{pts:5}} Calculate: 42 × 17 and give the answer below.  This is a long question.
-
-::: {.answer}
-42 × 17 = **714**
+# Usage:
+print(reverse_string("hello"))  # Output: "olleh"
+```
 :::
 
-{{vf}}
+{{begin-narrow}}
 
-2. {{pts:5}} Solve for x: 3x - 7 = 14
+Write a function `is_palindrome(s)` that checks if a string is a palindrome (reads the same forwards and backwards). Ignore spaces and capitalization.
 
-{{vf}}
+```python
+def is_palindrome(s):
+    # Your implementation here
+    pass
 
-3. {{pts:5}} Find the perimeter of a square with side length 8cm
 
-{{vf}}
+# Test cases:
+# is_palindrome("racecar") → True
+# is_palindrome("hello") → False
+# is_palindrome("A man a plan a canal Panama") → True
+```
 
-{{end-wide}}
+::: {.answer}
+**Sample Solution:**
+
+```python
+def is_palindrome(s):
+    # Remove spaces and convert to lowercase
+    cleaned = s.replace(" ", "").lower()
+    # Compare with reversed version
+    return cleaned == cleaned[::-1]
+```
+
+**Explanation:** We first clean the string by removing spaces and converting to lowercase, then compare it with its reversed version using Python's slice notation `[::-1]`.
+:::
+
+{{end-narrow}}

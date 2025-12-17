@@ -1,58 +1,188 @@
 # Quarto Typst Exam Template
 
-This is a Quarto typst template for creating exam papers.  
+This is a Quarto Typst template for creating exam papers.
 
-It supports a "normal" (we call it "wide") mode where questions go edge-to-edge, and a "narrow" mode where questions are in a narrow column on the left to allow room for answers to the right.
+It supports two layout modes: **wide mode** (full-width, default) for sections without handwritten answers, and **narrow mode** where questions are in a narrow left column to allow room for handwritten answers on the right.
 
-There are also many helper features for performing formatting tasks that are helpful for paper exams.
+The template includes helper features for common exam tasks: point values, answer blanks, styled boxes, answer keys, and more.
 
-Of course, all of Quarto's built-in Markdown extensions, shortcode, etc. are at your disposal as well.
+Of course, all of Quarto's built-in Markdown extensions, shortcodes, etc. are at your disposal as well.
 
 ## Files
 
-- `templates/exam-typst/typst-template.typ` - Helper functions for exams (points, blanks, vertical fill)
-- `templates/exam-typst/typst-show.typ` - Document formatting (no page numbers, heading styles)
-- `templates/exam-typst/exam-header.typ` - Exam header generator (title, subtitle, name field, instructions)
-- `templates/exam-typst/_filters/exam-auto-header.lua` - Lua filter that auto-generates exam header from YAML metadata
+- `_extensions/exam/typst-template.typ` - Helper functions for exams (points, blanks, vertical fill)
+- `_extensions/exam/typst-show.typ` - Document formatting (no page numbers, heading styles)
+- `_extensions/exam/exam-header.typ` - Exam header generator (title, subtitle, name field, instructions)
+- `_extensions/exam/_filters/exam-auto-header.lua` - Lua filter that auto-generates exam header from YAML metadata
 - `example-exam.qmd` - Example exam demonstrating common features
 
 ## Quick Start
 
-You can use this template by creating a new Quarto project:
+1. **Install the template** by creating a new Quarto project:
 
-```bash
-quarto use template jcausey/quarto-typst-exam-template
+   ```bash
+   quarto use template jcausey/quarto-typst-exam-template
+   ```
+
+   Or add it to an existing project:
+
+   ```bash
+   quarto add jcausey/quarto-typst-exam-template
+   ```
+
+2. **Create your exam** in a `.qmd` file:
+
+   ```yaml
+   ---
+   title: "Your Exam Title"
+   subtitle: "Your Subtitle"
+   format: exam-typst
+   ---
+   ```
+
+3. **Write your exam content** using shortcode syntax:
+
+   ```markdown
+   @. {{pts:5}} Your question here.
+
+   @. {{ptseach:5}} Here is a question with parts:
+     a) Part a
+     b) Part b
+
+   {{vf}}
+   ```
+
+4. **Render your exam** to PDF:
+
+   ```bash
+   quarto render your-exam.qmd
+   ```
+
+## Quick Reference
+
+Common shortcodes you'll use most often:
+
+| Shortcode | Description | Example |
+|-----------|-------------|---------|
+| `{{pts:N}}` | Point value for a question | `{{pts:10}}` → "(10 pts)" |
+| `{{ptseach:N}}` | Point value for each item | `{{ptseach:5}}` → "(5 pts each)" |
+| `{{vf}}` | Vertical fill (expands to fill space) | Use after questions needing answer space |
+| `{{begin-narrow}}` ... `{{end-narrow}}` | Narrow layout for handwritten answers | Wrap sections needing answer space |
+| `{{begin-wide}}` ... `{{end-wide}}` | Full-width layout | Use when `exam-question-display: narrow` |
+| `{{sblank}}` | Small blank line | `{{sblank}}` → ___ |
+| `{{lblank}}` | Large blank line | `{{lblank}}` → __________ |
+
+## Core Exam Features
+
+### Point Values
+
+Add point values to questions and sections using shortcodes:
+
+- `{{pts:N}}` - Displays point value (e.g., `{{pts:10}}` renders as "(10 pts)")
+- `{{ptseach:N}}` - Displays point value per item (e.g., `{{ptseach:5}}` renders as "(5 pts each)")
+
+**Examples:**
+
+```markdown
+## Part 1: Multiple Choice {{pts:20}}
+
+Choose the best answer. {{ptseach:4}}
+
+1. {{pts:4}} What is the time complexity of binary search?
 ```
 
-Or by adding it to an existing project:
+### Answer Blanks
 
-```bash
-quarto add jcausey/quarto-typst-exam-template
+Create inline blanks for fill-in-the-blank questions:
+
+- `{{sblank}}` - Small blank line (1.5em): ___
+- `{{lblank}}` - Large blank line (10em): __________
+- `{{ssblank}}` or `{{blank}}` - Super small blank with "?": \_?\_
+
+**Example:**
+
+```markdown
+The time complexity of binary search is {{sblank}} and it requires a {{sblank}} array.
 ```
 
-Then, in your `.qmd` file:
+This renders as: "The time complexity of binary search is ___ and it requires a ___ array."
+
+### Layout Modes: Wide vs Narrow
+
+The template supports two layout modes that can be mixed within the same exam:
+
+**Wide Mode (Default):** Full-width layout for questions that don't need handwritten answer space.
+
+**Narrow Mode:** Questions in a narrow left column with blank space on the right for handwritten answers.
+
+**Controlling the default mode:**
+
+Set the default in your YAML frontmatter:
 
 ```yaml
 ---
-title: "Your Exam Title"
-subtitle: "Your Subtitle"
-format: exam-typst
+exam-question-display: wide    # Default: full-width layout
+# OR
+exam-question-display: narrow  # Default: narrow layout with answer space
+exam-question-width: 3.27in     # Width of question column in narrow mode
 ---
 ```
 
-2. Write your exam content using shortcode syntax:
+**Switching modes within your exam:**
+
+- When `exam-question-display: wide` (default), use `{{begin-narrow}}...{{end-narrow}}` to create sections with answer space
+- When `exam-question-display: narrow`, use `{{begin-wide}}...{{end-wide}}` to create full-width sections
+
+**Example (using default wide mode with a narrow section):**
 
 ```markdown
-@. {{pts:5}} Your question here.
+---
+format: exam-typst
+---
 
-@. {{ptseach:5}} Here is a question with parts:
-  a) Part a
-  b) Part b
+## Part 1: Multiple Choice {{pts:20}}
+
+These questions are full-width (no writing space needed).
+
+1. What is 2 + 2?
+   a) 3  b) 4  c) 5
+
+{{begin-narrow}}
+
+## Part 2: Short Answer {{pts:30}}
+
+These questions have writing space on the right.
+
+1. {{pts:10}} Explain the concept of recursion.
 
 {{vf}}
+
+2. {{pts:20}} Describe three sorting algorithms.
+
+{{vf}}
+{{vf}}
+
+{{end-narrow}}
 ```
 
-## Custom Text Styling with Classes
+### Vertical Fill
+
+Use `{{vf}}` to create flexible vertical space that expands to fill available room. This is useful for giving students space to write answers:
+
+```markdown
+1. {{pts:10}} Solve the following problem:
+
+{{vf}}
+
+2. {{pts:10}} Show your work:
+
+{{vf}}
+{{vf}}  # Use multiple {{vf}} for more space
+```
+
+## Styling Features
+
+### Custom Text Styling with Classes
 
 The template supports Quarto's standard inline and block-level class syntax for text styling including size, color, and highlighting.
 
@@ -214,103 +344,11 @@ Answer blocks preserve the structure of lists, code blocks, and other formatting
 
 **Automatic Width Adaptation:** Answer blocks automatically adapt their width to the current layout context. In narrow sections (or when `exam-question-display: narrow`), they use the width specified by `exam-question-width`. In wide sections, they use full width. Use `.wide` or `.narrow` classes to override this behavior.
 
-You can easily extend the Lua filter in `templates/exam-typst/_filters/exam-auto-header.lua` to add more custom styling options.
+You can easily extend the Lua filter in `_extensions/exam/_filters/exam-auto-header.lua` to add more custom styling options.
 
-## Available Shortcodes
+## Advanced: Direct Typst Syntax
 
-The template includes a Lua filter that provides convenient shortcode syntax for common exam elements. All shortcodes use the `{{keyword}}` or `{{keyword:parameter}}` format.
-
-### Parameterized Shortcodes
-
-**Point Values:**
-
-- `{{pts:N}}` - Displays point value (e.g., `{{pts:10}}` renders as "(10 pts)")
-- `{{ptseach:N}}` - Displays point value per item (e.g., `{{ptseach:5}}` renders as "(5 pts each)")
-
-**Examples:**
-
-```markdown
-## Part 1: Multiple Choice {{pts:20}}
-
-Choose the best answer. {{ptseach:4}}
-
-1. {{pts:4}} What is the time complexity of binary search?
-```
-
-### Simple Shortcodes (No Parameters)
-
-**Spacing & Page Breaks:**
-
-- `{{vf}}` - Vertical fill (expands to fill available space)
-
-**Answer Blanks** (render inline with text):
-
-- `{{sblank}}` - Small blank line (1.5em): ___
-- `{{ssblank}}` - Super small blank with "?" (0.5em ? 0.5em): _?_
-- `{{lblank}}` - Large blank line (10em): __________
-- `{{blank}}` - Alias for `{{ssblank}}`
-
-**Inline blank usage example:**
-
-```markdown
-The velocity is {{sblank}} m/s and the temperature is {{ssblank}} degrees.
-```
-
-This renders as: "The velocity is ___ m/s and the temperature is \_?\_ degrees."
-
-**Layout Modes:**
-
-- `{{begin-narrow}}` ... `{{end-narrow}}` - Narrow layout with right column blank for handwritten answers
-- `{{begin-wide}}` ... `{{end-wide}}` - Full-width layout
-
-The behavior of these layout blocks depends on the `exam-question-display` parameter:
-
-- **When `exam-question-display: wide` (default):** The page defaults to full width. Use `{{begin-narrow}}...{{end-narrow}}` blocks to create constrained sections for handwritten answers.
-- **When `exam-question-display: narrow`:** The page defaults to narrow width (left column only). Use `{{begin-wide}}...{{end-wide}}` blocks to create full-width sections for diagrams, tables, or questions needing more space.
-
-**Layout example (wide mode - default):**
-
-```markdown
-{{begin-narrow}}
-
-Answer the following in the space provided to the right.
-
-1. {{pts:5}} Calculate: 42 × 17
-
-{{vf}}
-
-2. {{pts:5}} Solve for x: 3x - 7 = 14
-
-{{vf}}
-
-{{end-narrow}}
-```
-
-**Layout example (narrow mode):**
-
-```markdown
----
-exam-question-display: narrow
----
-
-This content appears in narrow mode by default.
-
-1. {{pts:5}} Calculate: 42 × 17
-
-{{vf}}
-
-{{begin-wide}}
-
-This section expands to full width for a diagram or table.
-
-{{end-wide}}
-
-Back to narrow mode for more questions.
-```
-
-### Alternative: Direct Typst Syntax
-
-If you prefer explicit Typst syntax, you can still use the backtick-wrapped format:
+If you prefer explicit Typst syntax over shortcodes, you can use the backtick-wrapped format:
 
 **Point Values:**
 - `` `#pts([N])`{=typst} `` - Adds a superscript point value (e.g., "(10 pt.)")
@@ -361,23 +399,13 @@ exam-question-width: 3.5in
 
 See `example-exam.qmd` for a complete working example.
 
-## Rendering
-
-Render your exam with:
-
-```bash
-quarto render your-exam.qmd
-```
-
-This will generate a PDF file with your exam.
-
 ## Customization
 
 You can customize the appearance by:
 
-1. Modifying `templates/exam-typst/typst-template.typ` to change helper functions
-2. Modifying `templates/exam-typst/typst-show.typ` to change document-wide formatting
-3. Modifying `templates/exam-typst/exam-header.typ` to change header appearance
+1. Modifying `_extensions/exam/typst-template.typ` to change helper functions
+2. Modifying `_extensions/exam/typst-show.typ` to change document-wide formatting
+3. Modifying `_extensions/exam/exam-header.typ` to change header appearance
 4. Adjusting margins and fonts in the YAML frontmatter
 
 
