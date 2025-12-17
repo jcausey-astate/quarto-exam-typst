@@ -8,18 +8,12 @@ exam-subtitlesize: 12pt
 exam-question-display: narrow
 exam-question-width: 3.33in
 format:
-  typst:
+  exam-typst:
     papersize: us-letter
     margin:
       x: 2cm
       y: 2cm
     fontsize: 10pt
-    keep-typ: true
-    template-partials:
-      - templates/exam-typst/typst-template.typ
-      - templates/exam-typst/typst-show.typ
-filters:
-  - templates/exam-typst/_filters/exam-auto-header.lua
 ---
 
 ## Part 1: Multiple Choice {{pts:20}}

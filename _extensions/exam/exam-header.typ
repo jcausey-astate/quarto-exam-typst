@@ -2,7 +2,8 @@
 // Usage: #exam-header(title: "My Exam", subtitle: "Spring 2025", ...)
 
 // Import the force-wide-state from typst-template.typ
-#import "typst-template.typ": force-wide-state
+// Import removed - available via template-partials concatenation
+// #import "typst-template.typ": force-wide-state
 
 #let exam-header(
   title: none,

@@ -1,0 +1,15 @@
+title: "Quarto Exam Template"
+version: 1.0.0
+author: "Jason L Causey"
+contributes:
+  formats:
+    typst:
+      layout:
+        papersize: us-letter
+        margin:
+          x: 2cm
+          y: 2cm
+      template: exam-template.typ
+      filters:
+        - _filters/exam-auto-header.lua
+      keep-typ: false

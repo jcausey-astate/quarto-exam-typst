@@ -477,8 +477,7 @@ function Pandoc(doc)
 ]], exam_question_display, exam_question_width)
 
   -- Create the exam header Typst code
-  local header_code = string.format([[#import "templates/exam-typst/exam-header.typ": exam-header
-#exam-header(
+  local header_code = string.format([[#exam-header(
   title: "%s",
   subtitle: "%s",
   titlesize: %s,

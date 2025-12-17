@@ -18,30 +18,25 @@ Of course, all of Quarto's built-in Markdown extensions, shortcode, etc. are at 
 
 ## Quick Start
 
-1. Create a `.qmd` file with the following frontmatter:
+You can use this template by creating a new Quarto project:
+
+```bash
+quarto use template jcausey/quarto-typst-exam-template
+```
+
+Or by adding it to an existing project:
+
+```bash
+quarto add jcausey/quarto-typst-exam-template
+```
+
+Then, in your `.qmd` file:
 
 ```yaml
 ---
 title: "Your Exam Title"
 subtitle: "Your Subtitle"
-exam-noname: false
-exam-noinstructions: false
-exam-titlesize: 14pt
-exam-subtitlesize: 12pt
-format:
-  typst:
-    papersize: us-letter
-    margin:
-      x: 2cm
-      y: 2cm
-    mainfont: "Times New Roman"
-    fontsize: 10pt
-    keep-typ: false
-    template-partials:
-      - templates/exam-typst/typst-template.typ
-      - templates/exam-typst/typst-show.typ
-filters:
-  - templates/exam-typst/_filters/exam-auto-header.lua
+format: exam-typst
 ---
 ```
 
