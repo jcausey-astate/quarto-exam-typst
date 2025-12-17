@@ -380,15 +380,30 @@ Configure the exam header using these YAML frontmatter variables:
 - `exam-subtitlesize` - Subtitle font size (default: 14pt)
 - `exam-noname` - Hide the name field (default: false)
 - `exam-noinstructions` - Hide the instructions (default: false)
+- `instructions` - Custom exam instructions (string). If not specified, default instructions are used.
 - `exam-question-display` - Default question display style: "wide" or "narrow" (default: "wide")
 - `exam-question-width` - Specific width of question column when in "narrow" question style. (No effect when in "wide" display style.)
 
-Example:
+### Custom Instructions
+
+By default, exams display these instructions:
+
+> Read each question carefully and fully before answering. Answer all questions using complete sentences unless the question specifies otherwise. Explain your thoughts and provide any necessary context; supporting examples, code, formulas, etc. are encouraged. Clearly state any additional assumptions you make in forming your responses; always be as specific as possible.
+
+To use custom instructions, add an `instructions` field to your YAML frontmatter:
+
+```yaml
+instructions: "Answer all questions completely. Show all work. You may use your notes and textbook."
+```
+
+### Example Configuration
+
 ```yaml
 title: "Data Structures Final Exam"
 subtitle: "Spring 2025"
 exam-noname: false
 exam-noinstructions: false
+instructions: "Answer all questions in the spaces provided. You may use a calculator but not other resources."
 exam-titlesize: 20pt
 exam-subtitlesize: 14pt
 exam-question-display: narrow

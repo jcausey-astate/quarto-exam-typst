@@ -437,6 +437,7 @@ function Pandoc(doc)
   local exam_subtitlesize = "14pt"
   local exam_question_display = "wide"  -- default to wide
   local exam_question_width = "2.37in"  -- default width
+  local instructions = ""
 
   if doc.meta.title then
     title = pandoc.utils.stringify(doc.meta.title)
@@ -470,6 +471,10 @@ function Pandoc(doc)
     exam_question_width = pandoc.utils.stringify(doc.meta["exam-question-width"]):lower()
   end
 
+  if doc.meta.instructions then
+    instructions = pandoc.utils.stringify(doc.meta.instructions)
+  end
+
   -- Create code to set the exam-question-display and exam-question-width state
   -- Note: exam-question-display is a string, but exam-question-width must be a Typst length (unquoted)
   local state_code = string.format([[#exam-question-display-state.update("%s")
@@ -477,20 +482,28 @@ function Pandoc(doc)
 ]], exam_question_display, exam_question_width)
 
   -- Create the exam header Typst code
+  local instructions_param = ""
+  if instructions ~= "" then
+    -- Escape quotes and newlines for Typst string
+    instructions_param = string.format(',\n  instructions: "%s"',
+      instructions:gsub('"', '\\"'):gsub('\n', '\\n'))
+  end
+
   local header_code = string.format([[#exam-header(
   title: "%s",
   subtitle: "%s",
   titlesize: %s,
   subtitlesize: %s,
   noname: %s,
-  noinstructions: %s,
+  noinstructions: %s%s,
 )]],
     title:gsub('"', '\\"'):gsub('\n', '\\n'),
     subtitle:gsub('"', '\\"'):gsub('\n', '\\n'),
     exam_titlesize,
     exam_subtitlesize,
     exam_noname_str,
-    exam_noinstructions_str
+    exam_noinstructions_str,
+    instructions_param
   )
 
   -- Create RawBlocks
