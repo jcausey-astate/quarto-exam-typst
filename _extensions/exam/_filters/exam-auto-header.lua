@@ -401,6 +401,34 @@ function Div(elem)
   return elem
 end
 
+-- Handle inline code elements (Code) to prevent Pandoc's syntax highlighter
+-- from emitting LaTeX-specific token functions (NormalTok, KeywordTok, etc.)
+-- that are undefined in Typst output.
+function Code(elem)
+  -- Emit inline code as a raw Typst `raw` call, escaping backticks in the content
+  local content = elem.text:gsub("`", "\\`")
+  return pandoc.RawInline("typst", string.format("`%s`", content))
+end
+
+-- Handle fenced code blocks (CodeBlock) to prevent Pandoc's syntax highlighter
+-- from emitting Typst-incompatible Skylighting/token functions.
+-- We emit a plain Typst raw block, passing the language for Typst's own highlighter.
+function CodeBlock(elem)
+  local lang = ""
+  if elem.classes and #elem.classes > 0 then
+    lang = elem.classes[1]
+  end
+  -- Escape any backticks in the content
+  local content = elem.text:gsub("`", "\\`")
+  local typst_raw
+  if lang ~= "" then
+    typst_raw = string.format("```%s\n%s\n```", lang, content)
+  else
+    typst_raw = string.format("```\n%s\n```", content)
+  end
+  return pandoc.RawBlock("typst", typst_raw)
+end
+
 -- Process Para elements to handle shorthands in paragraph context
 function Para(elem)
   -- Check if this paragraph contains only a layout shortcode
@@ -523,6 +551,6 @@ end
 -- Explicitly define filter execution order
 return {
   { Meta = Meta },  -- Process metadata first to set box_width
-  { Str = Str, Span = Span, Para = Para, Div = Div },  -- Then process elements
+  { Str = Str, Span = Span, Para = Para, Div = Div, Code = Code, CodeBlock = CodeBlock },  -- Then process elements
   { Pandoc = Pandoc }  -- Finally process the whole document
 }
