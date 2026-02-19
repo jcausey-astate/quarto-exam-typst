@@ -311,6 +311,9 @@
     }
   }
 
+  // Remove all table grid lines; mid-rule comes from table.hline() in the content
+  set table(stroke: none, inset: (x: 6pt, y: 4pt))
+
   doc
 }
 

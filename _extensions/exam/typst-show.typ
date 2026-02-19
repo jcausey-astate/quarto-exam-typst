@@ -129,6 +129,9 @@
     }
   }
 
+  // Remove all table grid lines; mid-rule comes from table.hline() in the content
+  set table(stroke: none, inset: (x: 6pt, y: 4pt))
+
   // Code blocks (raw blocks) should respect narrow/wide mode
   // Override Quarto's default styling (which sets width: 100%, fill: luma(230))
   show raw.where(block: true): it => {
