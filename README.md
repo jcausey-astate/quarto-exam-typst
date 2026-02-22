@@ -199,20 +199,26 @@ This creates a highlighted box with pale blue background.
 
 ### Available Classes
 
-**Text Sizes:**  These size classes are designed to be similar to LaTeX.
+**Text Sizes:**  These size classes are designed to be similar to LaTeX.  They also act relative to the base font size, and the point sizes shown below assume 10pt base font size.
 
-- `.tiny` - 7pt
-- `.small` - 8pt
-- `.large` - 12pt
-- `.huge` or `.Large` - 14pt
-- `.LARGE` - 16pt
+- `.tiny` - 5pt (50%)
+- `.scriptsize` - 7pt (70%)
+- `.footnotesize` - 8pt (80%)
+- `.small` - 9pt (90%)
+- `.normalsize` - 10pt (100%)
+- `.large` - 12pt (120%)
+- `.Large` - 14.4pt (144%)
+- `.LARGE` - 17.28pt (172.8%)
+- `.huge` - 20.74pt (207.4%)
+- `.Huge` - 24.88pt (248.8%)
+- `.HUGE` - 27.28pt (272.8%)
 
-**Relative Text Sizes:**  These classes scale the font size relative to the current (inherited) size.
+**Incremental Relative Text Sizes:**  These classes scale the font size relative to the current (inherited) size.
 
 - `.smaller` - 85% of the current font size
 - `.larger` - 120% of the current font size
 
-Relative sizes stack when spans or divs are **nested**: `[outer [inner]{.smaller}]{.smaller}` applies `.smaller` twice, so the inner text is approximately 72% of the base size (0.85 × 0.85). If both a relative and an absolute size class appear on the same element, the absolute size takes precedence.
+Relative sizes stack when spans or divs are **nested**: `[outer [inner]{.smaller}]{.smaller}` applies `.smaller` twice, so the inner text is approximately 72% of the base size (0.85 × 0.85). If both an incremental relative and an absolute size class appear on the same element, the absolute size takes precedence.
 
 **Text Colors:**
 

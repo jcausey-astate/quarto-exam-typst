@@ -130,13 +130,19 @@ function Span(elem)
   -- Check if span has classes
   if #elem.classes > 0 then
     -- Map class names to Typst text sizes
+    -- based on https://tex.stackexchange.com/a/24600
     local size_map = {
-      ["tiny"] = "7pt",
-      ["small"] = "8pt",
-      ["large"] = "12pt",
-      ["huge"] = "14pt",
-      ["Large"] = "14pt",  -- alternative
-      ["LARGE"] = "16pt",
+      ["tiny"] = "0.5em",
+      ["scriptsize"] = "0.7em",
+      ["footnotesize"] = "0.8em",
+      ["small"] =  "0.9em",
+      ["normalsize"] = "1.0em",
+      ["large"] = "1.2em",
+      ["Large"] = "1.44em",
+      ["LARGE"] = "1.728em",
+      ["huge"] = "2.074em",
+      ["Huge"] = "2.488em",
+      ["HUGE"] = "2.728em", -- custom to our template
     }
 
     -- Map class names to relative Typst text sizes (em units scale relative to inherited size)
