@@ -207,6 +207,13 @@ This creates a highlighted box with pale blue background.
 - `.huge` or `.Large` - 14pt
 - `.LARGE` - 16pt
 
+**Relative Text Sizes:**  These classes scale the font size relative to the current (inherited) size.
+
+- `.smaller` - 85% of the current font size
+- `.larger` - 120% of the current font size
+
+Relative sizes stack when spans or divs are **nested**: `[outer [inner]{.smaller}]{.smaller}` applies `.smaller` twice, so the inner text is approximately 72% of the base size (0.85 × 0.85). If both a relative and an absolute size class appear on the same element, the absolute size takes precedence.
+
 **Text Colors:**
 
 - `.red`, `.blue`, `.green`, `.orange`, `.purple`, `.gray` (or `.grey`)
@@ -227,6 +234,8 @@ You can combine multiple classes in any order to apply multiple styling effects:
 - Size + Highlight: `[small highlighted]{.small .highlight-green}`
 - Color + Highlight: `[blue text on yellow]{.blue .highlight-yellow}`
 - All three: `[large red highlighted]{.large .red .highlight}`
+- Relative size + Color: `[smaller blue text]{.smaller .blue}`
+- Nested relative (stacking): `[outer [inner]{.smaller}]{.smaller}`
 
 The order doesn't matter - `[text]{.red .large}` and `[text]{.large .red}` produce the same result.
 

@@ -139,6 +139,12 @@ function Span(elem)
       ["LARGE"] = "16pt",
     }
 
+    -- Map class names to relative Typst text sizes (em units scale relative to inherited size)
+    local relative_size_map = {
+      ["smaller"] = "0.85em",
+      ["larger"] = "1.2em",
+    }
+
     -- Map class names to Typst colors
     local color_map = {
       ["red"] = "red",
@@ -171,6 +177,7 @@ function Span(elem)
     local color = nil
     local highlight = nil
     local is_answer = false
+    local relative_size = nil
 
     for _, class in ipairs(elem.classes) do
       if size_map[class] then
@@ -181,11 +188,13 @@ function Span(elem)
         highlight = highlight_map[class]
       elseif class == "answer" then
         is_answer = true
+      elseif relative_size_map[class] then
+        relative_size = relative_size_map[class]
       end
     end
 
     -- Build the Typst code with combined styling
-    if size or color or highlight or is_answer then
+    if size or color or highlight or is_answer or relative_size then
       -- First, recursively process nested content (this will handle nested Spans)
       local processed_content = pandoc.walk_inline(elem, {
         Span = Span,
@@ -211,10 +220,12 @@ function Span(elem)
       end
 
       -- Apply text styling (size and/or color) first
-      if size or color then
+      if size or color or relative_size then
         local params = {}
         if size then
           table.insert(params, string.format("size: %s", size))
+        elseif relative_size then
+          table.insert(params, string.format("size: %s", relative_size))
         end
         if color then
           table.insert(params, string.format("fill: %s", color))
@@ -252,11 +263,47 @@ end
 
 -- Handle block divs with custom classes ::: {.classname}
 function Div(elem)
-  -- Guard: leave .column divs untouched so the parent .columns div can process them
+  -- Guard: .column divs must be left as-is for the parent .columns handler to process,
+  -- but we still apply any styling classes by injecting Typst code into the column content.
+  local is_column = false
   for _, class in ipairs(elem.classes) do
-    if class == "column" then
-      return elem
+    if class == "column" then is_column = true; break end
+  end
+  if is_column then
+    -- Check for size/color/relative-size classes and inject wrapping into content
+    local size_map = {
+      ["tiny"] = "7pt", ["small"] = "8pt", ["large"] = "12pt",
+      ["huge"] = "14pt", ["Large"] = "14pt", ["LARGE"] = "16pt",
+    }
+    local relative_size_map = { ["smaller"] = "0.85em", ["larger"] = "1.2em" }
+    local color_map = {
+      ["red"] = "red", ["blue"] = "blue", ["green"] = "green",
+      ["orange"] = "orange", ["purple"] = "purple", ["gray"] = "gray", ["grey"] = "gray",
+    }
+    local size, color, relative_size = nil, nil, nil
+    for _, class in ipairs(elem.classes) do
+      if size_map[class] then size = size_map[class]
+      elseif relative_size_map[class] then relative_size = relative_size_map[class]
+      elseif color_map[class] then color = color_map[class]
+      end
     end
+    if size or color or relative_size then
+      local params = {}
+      if size then
+        table.insert(params, string.format("size: %s", size))
+      elseif relative_size then
+        table.insert(params, string.format("size: %s", relative_size))
+      end
+      if color then table.insert(params, string.format("fill: %s", color)) end
+      local new_content = {}
+      table.insert(new_content, pandoc.RawBlock("typst", string.format("#block[\n#set text(%s)\n", table.concat(params, ", "))))
+      for _, blk in ipairs(elem.content) do
+        table.insert(new_content, blk)
+      end
+      table.insert(new_content, pandoc.RawBlock("typst", "]"))
+      elem.content = new_content
+    end
+    return elem
   end
 
   -- Handle .columns (multi-column layout)
@@ -266,11 +313,11 @@ function Div(elem)
       local col_contents = {}
       for _, child in ipairs(elem.content) do
         if child.t == "Div" then
-          local is_column = false
+          local child_is_column = false
           for _, cc in ipairs(child.classes) do
-            if cc == "column" then is_column = true; break end
+            if cc == "column" then child_is_column = true; break end
           end
-          if is_column then
+          if child_is_column then
             local w = child.attributes["width"]
             table.insert(col_widths, column_width_to_typst(w))
             table.insert(col_contents, child.content)
@@ -308,6 +355,12 @@ function Div(elem)
       ["huge"] = "14pt",
       ["Large"] = "14pt",  -- alternative
       ["LARGE"] = "16pt",
+    }
+
+    -- Map class names to relative Typst text sizes (em units scale relative to inherited size)
+    local relative_size_map = {
+      ["smaller"] = "0.85em",
+      ["larger"] = "1.2em",
     }
 
     -- Map class names to Typst colors
@@ -354,6 +407,7 @@ function Div(elem)
     local highlight = nil
     local exambox = nil
     local is_answer = false
+    local relative_size = nil
     local explicit_width = nil  -- for .wide and .narrow classes
 
     for _, class in ipairs(elem.classes) do
@@ -371,12 +425,14 @@ function Div(elem)
         explicit_width = "100%"
       elseif class == "narrow" then
         explicit_width = "narrow"  -- marker for get_width_info to use narrow width
+      elseif relative_size_map[class] then
+        relative_size = relative_size_map[class]
       end
     end
 
     -- Build the Typst code with combined styling
     -- Use #set text() to preserve structure of lists, code blocks, etc.
-    if size or color or highlight or exambox or is_answer then
+    if size or color or highlight or exambox or is_answer or relative_size then
       local result = {}
       local open_parts = {}
       local close_parts = {}
@@ -417,10 +473,12 @@ function Div(elem)
       end
 
       -- Apply text styling (size and/or color) with set rules
-      if size or color or is_answer then
+      if size or color or is_answer or relative_size then
         local params = {}
         if size then
           table.insert(params, string.format("size: %s", size))
+        elseif relative_size then
+          table.insert(params, string.format("size: %s", relative_size))
         end
         if color then
           table.insert(params, string.format("fill: %s", color))
