@@ -34,6 +34,16 @@ local function get_width_info(explicit_width)
   end
 end
 
+-- Convert a Quarto column width attribute (e.g. "50%") to a Typst column size
+local function column_width_to_typst(width_attr)
+  if not width_attr then return "1fr" end
+  local pct = width_attr:match("^(%d+%.?%d*)%%$")
+  if pct then
+    return pct .. "%"
+  end
+  return "1fr"
+end
+
 -- Escape special characters for pattern matching
 local function escape_pattern(text)
   return text:gsub("[%-%.%+%*%?%[%]%(%)%^%$%%]", "%%%1")
@@ -242,6 +252,52 @@ end
 
 -- Handle block divs with custom classes ::: {.classname}
 function Div(elem)
+  -- Guard: leave .column divs untouched so the parent .columns div can process them
+  for _, class in ipairs(elem.classes) do
+    if class == "column" then
+      return elem
+    end
+  end
+
+  -- Handle .columns (multi-column layout)
+  for _, class in ipairs(elem.classes) do
+    if class == "columns" then
+      local col_widths = {}
+      local col_contents = {}
+      for _, child in ipairs(elem.content) do
+        if child.t == "Div" then
+          local is_column = false
+          for _, cc in ipairs(child.classes) do
+            if cc == "column" then is_column = true; break end
+          end
+          if is_column then
+            local w = child.attributes["width"]
+            table.insert(col_widths, column_width_to_typst(w))
+            table.insert(col_contents, child.content)
+          end
+        end
+      end
+
+      if #col_widths == 0 then
+        return elem
+      end
+
+      local cols_str = table.concat(col_widths, ", ")
+      local result = {}
+      table.insert(result, pandoc.RawBlock("typst",
+        string.format("#grid(columns: (%s), column-gutter: 1em,\n", cols_str)))
+      for _, col_blocks in ipairs(col_contents) do
+        table.insert(result, pandoc.RawBlock("typst", "["))
+        for _, blk in ipairs(col_blocks) do
+          table.insert(result, blk)
+        end
+        table.insert(result, pandoc.RawBlock("typst", "],"))
+      end
+      table.insert(result, pandoc.RawBlock("typst", ")"))
+      return result
+    end
+  end
+
   -- Check if div has classes
   if #elem.classes > 0 then
     -- Map class names to Typst text sizes
