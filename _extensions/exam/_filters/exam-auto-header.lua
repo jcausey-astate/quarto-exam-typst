@@ -658,7 +658,7 @@ function Pandoc(doc)
   table.insert(doc.blocks, 1, header_block)
   
 
-  -- No need to wrap the document - the show rules in typst-show.typ handle it
+  -- No need to wrap the document - the show rules in exam-template.typ handle it
   return doc
 end
 

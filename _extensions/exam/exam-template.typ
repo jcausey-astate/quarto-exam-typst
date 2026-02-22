@@ -78,6 +78,7 @@
     }
   }
 }
+
 // Exam header generator
 // Usage: #exam-header(title: "My Exam", subtitle: "Spring", ...)
 
