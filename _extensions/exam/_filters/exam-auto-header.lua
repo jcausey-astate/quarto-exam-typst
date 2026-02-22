@@ -278,8 +278,17 @@ function Div(elem)
   if is_column then
     -- Check for size/color/relative-size classes and inject wrapping into content
     local size_map = {
-      ["tiny"] = "7pt", ["small"] = "8pt", ["large"] = "12pt",
-      ["huge"] = "14pt", ["Large"] = "14pt", ["LARGE"] = "16pt",
+      ["tiny"] = "0.5em",
+      ["scriptsize"] = "0.7em",
+      ["footnotesize"] = "0.8em",
+      ["small"] =  "0.9em",
+      ["normalsize"] = "1.0em",
+      ["large"] = "1.2em",
+      ["Large"] = "1.44em",
+      ["LARGE"] = "1.728em",
+      ["huge"] = "2.074em",
+      ["Huge"] = "2.488em",
+      ["HUGE"] = "2.728em", -- custom to our template
     }
     local relative_size_map = { ["smaller"] = "0.85em", ["larger"] = "1.2em" }
     local color_map = {
@@ -335,8 +344,115 @@ function Div(elem)
         return elem
       end
 
+      -- Collect any extra formatting classes (other than "columns") so they can be
+      -- applied as an outer wrapper around the grid, as if the .columns div were
+      -- nested inside a separate div carrying those classes.
+      local col_size_map = {
+        ["tiny"] = "0.5em",
+        ["scriptsize"] = "0.7em",
+        ["footnotesize"] = "0.8em",
+        ["small"] =  "0.9em",
+        ["normalsize"] = "1.0em",
+        ["large"] = "1.2em",
+        ["Large"] = "1.44em",
+        ["LARGE"] = "1.728em",
+        ["huge"] = "2.074em",
+        ["Huge"] = "2.488em",
+        ["HUGE"] = "2.728em", -- custom to our template
+      }
+      local col_relative_size_map = { ["smaller"] = "0.85em", ["larger"] = "1.2em" }
+      local col_color_map = {
+        ["red"] = "red", ["blue"] = "blue", ["green"] = "green",
+        ["orange"] = "orange", ["purple"] = "purple", ["gray"] = "gray", ["grey"] = "gray",
+      }
+      local col_highlight_map = {
+        ["highlight"] = "rgb(255, 255, 200)", ["highlight-yellow"] = "rgb(255, 255, 200)",
+        ["highlight-green"] = "rgb(200, 255, 200)", ["highlight-blue"] = "rgb(200, 230, 255)",
+        ["highlight-pink"] = "rgb(255, 200, 230)", ["highlight-orange"] = "rgb(255, 230, 200)",
+      }
+      local col_exambox_map = {
+        ["exambox"]        = {fill = "rgb(240, 245, 255)", stroke = "rgb(100, 150, 255)"},
+        ["exambox-blue"]   = {fill = "rgb(240, 245, 255)", stroke = "rgb(100, 150, 255)"},
+        ["exambox-green"]  = {fill = "rgb(240, 255, 240)", stroke = "rgb(100, 200, 100)"},
+        ["exambox-yellow"] = {fill = "rgb(255, 255, 230)", stroke = "rgb(200, 180, 0)"},
+        ["exambox-red"]    = {fill = "rgb(255, 240, 240)", stroke = "rgb(220, 100, 100)"},
+        ["exambox-orange"] = {fill = "rgb(255, 245, 230)", stroke = "rgb(220, 140, 60)"},
+        ["exambox-gray"]   = {fill = "rgb(245, 245, 245)", stroke = "rgb(150, 150, 150)"},
+      }
+      local col_answer_style = { bg = "rgb(245, 255, 245)", fg = "rgb(50, 120, 50)" }
+
+      local extra_size, extra_color, extra_highlight, extra_exambox = nil, nil, nil, nil
+      local extra_is_answer, extra_relative_size, extra_explicit_width = false, nil, nil
+
+      for _, cls in ipairs(elem.classes) do
+        if cls ~= "columns" then
+          if col_size_map[cls] then extra_size = col_size_map[cls]
+          elseif col_color_map[cls] then extra_color = col_color_map[cls]
+          elseif col_highlight_map[cls] then extra_highlight = col_highlight_map[cls]
+          elseif col_exambox_map[cls] then extra_exambox = col_exambox_map[cls]
+          elseif cls == "answer" then extra_is_answer = true
+          elseif cls == "wide" then extra_explicit_width = "100%"
+          elseif cls == "narrow" then extra_explicit_width = "narrow"
+          elseif col_relative_size_map[cls] then extra_relative_size = col_relative_size_map[cls]
+          end
+        end
+      end
+
+      -- Build wrapper open/close Typst strings for any extra styling classes
+      local open_wrapper, close_wrapper = nil, nil
+      if extra_size or extra_color or extra_highlight or extra_exambox or extra_is_answer or extra_relative_size then
+        local open_parts = {}
+        local close_parts = {}
+        local needs_context, width_expr = get_width_info(extra_explicit_width)
+
+        if needs_context and (extra_exambox or extra_is_answer or extra_highlight) then
+          table.insert(open_parts, string.format("#context { let _w = %s;\n", width_expr))
+          table.insert(close_parts, "}")
+        end
+        if extra_exambox then
+          local w = needs_context and "_w" or width_expr
+          table.insert(open_parts, string.format(
+            "block(fill: %s, stroke: (left: 3pt + %s, rest: 0.5pt + %s), radius: (top-right: 6pt, bottom-right: 6pt, rest: 0pt), inset: 10pt, width: %s)[\n",
+            extra_exambox.fill, extra_exambox.stroke, extra_exambox.stroke, w))
+          table.insert(close_parts, 1, "]")
+        end
+        if extra_is_answer and not extra_exambox then
+          local w = needs_context and "_w" or width_expr
+          table.insert(open_parts, string.format(
+            "block(fill: %s, inset: 8pt, radius: 3pt, width: %s)[\n", col_answer_style.bg, w))
+          table.insert(close_parts, 1, "]")
+        end
+        if extra_highlight and not extra_exambox and not extra_is_answer then
+          local w = needs_context and "_w" or width_expr
+          table.insert(open_parts, string.format(
+            "box(fill: %s, inset: 8pt, radius: 4pt, width: %s)[\n", extra_highlight, w))
+          table.insert(close_parts, 1, "]")
+        end
+        local params = {}
+        if extra_size then
+          table.insert(params, string.format("size: %s", extra_size))
+        elseif extra_relative_size then
+          table.insert(params, string.format("size: %s", extra_relative_size))
+        end
+        if extra_color then
+          table.insert(params, string.format("fill: %s", extra_color))
+        elseif extra_is_answer then
+          table.insert(params, string.format("fill: %s", col_answer_style.fg))
+        end
+        if #params > 0 then
+          table.insert(open_parts, "#block[\n")
+          table.insert(open_parts, string.format("#set text(%s)\n", table.concat(params, ", ")))
+          table.insert(close_parts, 1, "]")
+        end
+        if #open_parts > 0 then open_wrapper = table.concat(open_parts, "") end
+        if #close_parts > 0 then close_wrapper = table.concat(close_parts, "\n") end
+      end
+
       local cols_str = table.concat(col_widths, ", ")
       local result = {}
+      if open_wrapper then
+        table.insert(result, pandoc.RawBlock("typst", open_wrapper))
+      end
       table.insert(result, pandoc.RawBlock("typst",
         string.format("#grid(columns: (%s), column-gutter: 1em,\n", cols_str)))
       for _, col_blocks in ipairs(col_contents) do
@@ -347,6 +463,9 @@ function Div(elem)
         table.insert(result, pandoc.RawBlock("typst", "],"))
       end
       table.insert(result, pandoc.RawBlock("typst", ")"))
+      if close_wrapper then
+        table.insert(result, pandoc.RawBlock("typst", close_wrapper))
+      end
       return result
     end
   end
@@ -355,12 +474,17 @@ function Div(elem)
   if #elem.classes > 0 then
     -- Map class names to Typst text sizes
     local size_map = {
-      ["tiny"] = "7pt",
-      ["small"] = "8pt",
-      ["large"] = "12pt",
-      ["huge"] = "14pt",
-      ["Large"] = "14pt",  -- alternative
-      ["LARGE"] = "16pt",
+      ["tiny"] = "0.5em",
+      ["scriptsize"] = "0.7em",
+      ["footnotesize"] = "0.8em",
+      ["small"] =  "0.9em",
+      ["normalsize"] = "1.0em",
+      ["large"] = "1.2em",
+      ["Large"] = "1.44em",
+      ["LARGE"] = "1.728em",
+      ["huge"] = "2.074em",
+      ["Huge"] = "2.488em",
+      ["HUGE"] = "2.728em", -- custom to our template
     }
 
     -- Map class names to relative Typst text sizes (em units scale relative to inherited size)
