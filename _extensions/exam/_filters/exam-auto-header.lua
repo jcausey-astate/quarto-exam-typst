@@ -783,9 +783,11 @@ function Pandoc(doc)
   local state_block = pandoc.RawBlock("typst", state_code)
   local header_block = pandoc.RawBlock("typst", header_code)
 
-  -- Insert at beginning of document
-  table.insert(doc.blocks, 1, state_block)  -- state must come before header
+  -- Insert at beginning of document; state must come before header.
+  -- Insert header first (it will be at position 1 temporarily),
+  -- then insert state at position 1 (pushing header to position 2).
   table.insert(doc.blocks, 1, header_block)
+  table.insert(doc.blocks, 1, state_block)
   
 
   -- No need to wrap the document - the show rules in exam-template.typ handle it

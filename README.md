@@ -117,7 +117,7 @@ Set the default in your YAML frontmatter:
 ---
 exam-question-layout: wide    # Default: full-width layout
 # OR
-exam-question-layout: narrow  # Default: narrow layout with answer space
+exam-question-layout: narrow  # narrow layout with answer space
 exam-question-width:  3.27in  # Width of question column in narrow mode
 ---
 ```
