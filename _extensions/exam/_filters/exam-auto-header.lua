@@ -562,10 +562,31 @@ function Div(elem)
 
     -- Build the Typst code with combined styling
     -- Use #set text() to preserve structure of lists, code blocks, etc.
-    if size or color or highlight or exambox or is_answer or relative_size then
+    if size or color or highlight or exambox or is_answer or relative_size or explicit_width then
       local result = {}
       local open_parts = {}
       local close_parts = {}
+
+      -- When .wide is set, wrap content in force-wide-state updates so that
+      -- the show rules in exam-template.typ render at full width instead of narrow width.
+      if explicit_width == "100%" then
+        table.insert(open_parts, "#force-wide-state.update(true)\n")
+        table.insert(close_parts, "#force-wide-state.update(false)")
+      end
+
+      -- When .narrow is set, emit scoped show rules that constrain content to the
+      -- narrow column width, regardless of the document-level layout mode.
+      if explicit_width == "narrow" then
+        table.insert(open_parts, table.concat({
+          "#{\n",
+          "show par: it => context block(width: exam-question-width-state.get(), it)\n",
+          "show heading: it => context block(width: exam-question-width-state.get(), it)\n",
+          "show enum: it => context block(width: exam-question-width-state.get(), it)\n",
+          "show list: it => context block(width: exam-question-width-state.get(), it)\n",
+          "[\n",
+        }, ""))
+        table.insert(close_parts, "]\n}")
+      end
 
       -- Check if we need context wrapping for width
       local needs_context, width_expr = get_width_info(explicit_width)
