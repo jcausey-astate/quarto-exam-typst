@@ -61,6 +61,7 @@ Common shortcodes you'll use most often:
 | `{{pts:N}}` | Point value for a question | `{{pts:10}}` → "(10 pts)" |
 | `{{ptseach:N}}` | Point value for each item | `{{ptseach:5}}` → "(5 pts each)" |
 | `{{vf}}` | Vertical fill (expands to fill space) | Use after questions needing answer space |
+| `{{vs:N}}` | Fixed vertical space (any Typst length) | `{{vs:1in}}`, `{{vs:2cm}}`, `{{vs:0.5em}}` |
 | `{{begin-narrow}}` ... `{{end-narrow}}` | Narrow layout for handwritten answers | Wrap sections needing answer space |
 | `{{begin-wide}}` ... `{{end-wide}}` | Full-width layout | Use when `exam-question-layout: narrow` |
 | `{{sblank}}` | Small blank line | `{{sblank}}` → ___ |
@@ -158,9 +159,11 @@ These questions have writing space on the right.
 {{end-narrow}}
 ```
 
-### Vertical Fill
+### Vertical Spacing
 
-Use `{{vf}}` to create flexible vertical space that expands to fill available room. This is useful for giving students space to write answers:
+Use `{{vf}}` to create flexible vertical space that expands to fill available room on the page. Use `{{vs:N}}` to insert a fixed amount of vertical space. Both are useful for giving students space to write answers.
+
+**`{{vf}}` — flexible fill:**
 
 ```markdown
 1. {{pts:10}} Solve the following problem:
@@ -170,7 +173,23 @@ Use `{{vf}}` to create flexible vertical space that expands to fill available ro
 2. {{pts:10}} Show your work:
 
 {{vf}}
-{{vf}}  # Use multiple {{vf}} for more space
+{{vf}}  # Two {{vf}} gives double the fill weight vs. one
+```
+
+Multiple `{{vf}}` shortcodes share the available space proportionally — two `{{vf}}` instances each get half the remaining space, so a question with `{{vf}}{{vf}}` gets twice as much answer room as one with a single `{{vf}}`.
+
+**`{{vs:N}}` — fixed space:**
+
+Use any valid Typst length unit: `in`, `cm`, `mm`, `pt`, `em`, `fr`.
+
+```markdown
+1. {{pts:5}} Short answer question.
+
+{{vs:1in}}
+
+2. {{pts:10}} Longer answer question.
+
+{{vs:2in}}
 ```
 
 ## Styling Features
@@ -370,6 +389,7 @@ If you prefer explicit Typst syntax over shortcodes, you can use the backtick-wr
 
 **Spacing:**
 - `` `#vf()`{=typst} `` - Vertical fill (expands to fill available space)
+- `` `#vs(1in)`{=typst} `` - Fixed vertical space (any Typst length: `1in`, `2cm`, `12pt`, `1em`, etc.)
 
 **Layout Modes:**
 - `` `#wide([content])`{=typst} `` - Full-width layout (default)

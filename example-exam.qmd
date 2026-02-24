@@ -56,7 +56,7 @@ Choose the best answer for each question. {{ptseach:4}}
    c. Post-order \
    d. Level-order
 
-{{vf}}
+{{< pagebreak >}}
 
 ## Part 2: Fill in the Blank {{pts:16}}
 
@@ -78,15 +78,20 @@ Complete each statement with the appropriate term. {{ptseach:2}}
 
 {{< pagebreak >}}
 
-{{begin-narrow}}
 
 ## Part 3: Short Answer {{pts:30}}
 
 Answer each question in the space provided. Write clearly and concisely. {{ptseach:10}}
 
+{{begin-narrow}}
+
 1. {{pts:10}} Explain the difference between a stack and a queue. Give one real-world application for each.
 
 {{vf}}
+
+Now continue to the following questions.
+
+{{vs:1cm}}
 
 2. {{pts:10}} What is a hash collision? Describe one method for handling hash collisions.
 

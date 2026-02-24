@@ -8,10 +8,10 @@ local shorthand_map = {
   ["{{blank}}"] = "#blank()",
   ["{{ssblank}}"] = "#ssblank()",
   ["{{lblank}}"] = "#lblank()",
-  ["{{begin-narrow}}"] = "#narrow([",
-  ["{{end-narrow}}"] = "])",
-  ["{{begin-wide}}"] = "#wide([",
-  ["{{end-wide}}"] = "])",
+  ["{{begin-narrow}}"] = "#exam-question-layout-state.update(\"narrow\")",
+  ["{{end-narrow}}"] = "#exam-question-layout-state.update(\"wide\")",
+  ["{{begin-wide}}"] = "#force-wide-state.update(true)",
+  ["{{end-wide}}"] = "#force-wide-state.update(false)",
 }
 
 -- Helper function to generate dynamic width code that respects layout context
@@ -44,11 +44,6 @@ local function column_width_to_typst(width_attr)
   return "1fr"
 end
 
--- Escape special characters for pattern matching
-local function escape_pattern(text)
-  return text:gsub("[%-%.%+%*%?%[%]%(%)%^%$%%]", "%%%1")
-end
-
 -- Process Str elements (plain text) - this is where inline text gets processed
 function Str(elem)
   -- First check for parameterized shortcodes (pts:N and ptseach:N)
@@ -58,10 +53,17 @@ function Str(elem)
   local pos = 1
 
   while pos <= #text do
-    -- Try to match {{pts:N}} or {{ptseach:N}}
+    -- Try to match {{pts:N}}, {{ptseach:N}}, or {{vs:AMOUNT}}
     local start_pos, end_pos, cmd, param = text:find("{{(pts):(%d+)}}", pos)
     if not start_pos then
       start_pos, end_pos, cmd, param = text:find("{{(ptseach):(%d+)}}", pos)
+    end
+    -- Try to match {{vs:AMOUNT}} (Typst length: 1in, 2cm, 0.5em, 12pt, 1fr, etc.)
+    if not start_pos then
+      local vs_start, vs_end, vs_param = text:find("{{vs:([%d%.]+[%a]+)}}", pos)
+      if vs_start then
+        start_pos, end_pos, cmd, param = vs_start, vs_end, "vs", vs_param
+      end
     end
 
     if start_pos then
@@ -69,15 +71,22 @@ function Str(elem)
       if start_pos > pos then
         table.insert(result, pandoc.Str(text:sub(pos, start_pos - 1)))
       end
-      -- Add the Typst code with parameter
-      local typst_code = string.format("#%s([%s])", cmd, param)
+      -- Generate Typst code based on command type
+      local typst_code
+      if cmd == "vs" then
+        -- vs takes a Typst length (not content), emit #v(amount) directly
+        typst_code = string.format("#v(%s)", param)
+      else
+        -- pts and ptseach take content parameters, use content brackets []
+        typst_code = string.format("#%s([%s])", cmd, param)
+      end
       table.insert(result, pandoc.RawInline("typst", typst_code))
       pos = end_pos + 1
     else
       -- No more parameterized shortcodes, check for simple shortcodes
       local found = false
       for shorthand, typst_code in pairs(shorthand_map) do
-        local sh_start, sh_end = text:find(escape_pattern(shorthand), pos, true)
+        local sh_start, sh_end = text:find(shorthand, pos, true)
         if sh_start and sh_start == pos then
           -- Found a simple shortcode at current position
           table.insert(result, pandoc.RawInline("typst", typst_code))
@@ -101,10 +110,14 @@ function Str(elem)
         if p_start and p_start < next_shortcode then
           next_shortcode = p_start
         end
+        p_start = text:find("{{vs:[%d%.]+[%a]+}}", pos)
+        if p_start and p_start < next_shortcode then
+          next_shortcode = p_start
+        end
 
         -- Check for simple shortcodes
         for shorthand, _ in pairs(shorthand_map) do
-          local sh_start = text:find(escape_pattern(shorthand), pos, true)
+          local sh_start = text:find(shorthand, pos, true)
           if sh_start and sh_start < next_shortcode then
             next_shortcode = sh_start
           end
@@ -705,11 +718,18 @@ function Para(elem)
         shorthand == "{{begin-narrow}}" or
         shorthand == "{{end-narrow}}" or
         shorthand == "{{begin-wide}}" or
-        shorthand == "{{end-wide}}"
+        shorthand == "{{end-wide}}" or
+        shorthand == "{{vf}}"
       ) then
         -- Convert to RawBlock instead of keeping as Para
         return pandoc.RawBlock("typst", typst_code)
       end
+    end
+    -- Standalone {{vs:AMOUNT}} paragraph → RawBlock
+    -- Pattern matches Typst lengths: 1in, 2cm, 0.5em, 12pt, 1fr, 3mm, etc.
+    local vs_amount = text:match("^{{vs:([%d%.]+[%a]+)}}$")
+    if vs_amount then
+      return pandoc.RawBlock("typst", string.format("#v(%s)", vs_amount))
     end
   end
 

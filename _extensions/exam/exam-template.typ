@@ -27,6 +27,9 @@
 // Vertical fill - useful for spacing
 #let vf() = v(1fr)
 
+// Vertical space with explicit amount (e.g. vs(1in), vs(2cm), vs(0.5em))
+#let vs(amount) = v(amount)
+
 // State variable to track the default question width mode
 #let exam-question-layout-state = state("exam-question-layout", "wide")
 
@@ -245,12 +248,14 @@
             let formatted_num = numbering(it.numbering, item_num)
             [#formatted_num #item.body]
 
-            // Add flexible spacing after each item
+            // Add flexible spacing after each item so questions auto-distribute on the page.
             // For multi-item enums: add after all items including the last
             // For single-item enums: DON'T add after the last (to keep with following content like code blocks)
+            // {{vf}} inside an item body adds additional v(1fr) weight, giving that question
+            // proportionally more space than neighbours without an explicit {{vf}}.
             if (num_items > 1) or (idx < num_items - 1) {
-              v(1em, weak: true)  // Minimum spacing
-              v(1fr)              // Flexible spacing to fill page
+              v(1em, weak: true)  // Minimum gap (collapses if adjacent spacing is larger)
+              v(1fr)              // Auto-distribute: fill remaining space evenly between items
             }
           }
         })
