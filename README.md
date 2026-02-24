@@ -24,6 +24,8 @@ Of course, all of Quarto's built-in Markdown extensions, shortcodes, etc. are at
    quarto add jcausey-astate/quarto-exam-typst
    ```
 
+   You can also **upgrade** to the latest version with the same `quarto add` command shown above.
+
 2. **Create your exam** in a `.qmd` file:
 
    ```yaml
@@ -52,7 +54,7 @@ Of course, all of Quarto's built-in Markdown extensions, shortcodes, etc. are at
    quarto render your-exam.qmd
    ```
 
-## Quick Reference
+## Exam Formatting Reference
 
 Common shortcodes you'll use most often:
 
