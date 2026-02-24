@@ -58,17 +58,17 @@ Of course, all of Quarto's built-in Markdown extensions, shortcodes, etc. are at
 
 Common shortcodes you'll use most often:
 
-| Shortcode | Description | Example |
-|-----------|-------------|---------|
-| `{{pts:N}}` | Point value for a question | `{{pts:10}}` → "(10 pts)" |
-| `{{ptseach:N}}` | Point value for each item | `{{ptseach:5}}` → "(5 pts each)" |
-| `{{vf}}` | Vertical fill (expands to fill space) | Use after questions needing answer space |
-| `{{vs:N}}` | Fixed vertical space (any Typst length) | `{{vs:1in}}`, `{{vs:2cm}}`, `{{vs:0.5em}}` |
-| `{{begin-narrow}}` ... `{{end-narrow}}` | Narrow layout for handwritten answers | Wrap sections needing answer space |
-| `{{begin-wide}}` ... `{{end-wide}}` | Full-width layout | Use when `exam-question-layout: narrow` |
-| `{{begin-center}}` ... `{{end-center}}` | Center-align content | Wrap sections that should be centered |
-| `{{sblank}}` | Small blank line | `{{sblank}}` → ___ |
-| `{{lblank}}` | Large blank line | `{{lblank}}` → __________ |
+| Shortcode                               | Description                             | Example                                    | Quarto Span/Div Class |
+|-----------------------------------------|-----------------------------------------|--------------------------------------------|-----------------------|
+| `{{pts:N}}`                             | Point value for a question              | `{{pts:10}}` → "(10 pts)"                  | n/a                   |
+| `{{ptseach:N}}`                         | Point value for each item               | `{{ptseach:5}}` → "(5 pts each)"           | n/a                   |
+| `{{vf}}`                                | Vertical fill (expands to fill space)   | Use after questions needing answer space   | n/a                   |
+| `{{vs:N}}`                              | Fixed vertical space (any Typst length) | `{{vs:1in}}`, `{{vs:2cm}}`, `{{vs:0.5em}}` | n/a`                  |
+| `{{begin-narrow}}` ... `{{end-narrow}}` | Narrow layout for handwritten answers   | Wrap sections needing answer space         | `.narrow`             |
+| `{{begin-wide}}` ... `{{end-wide}}`     | Full-width layout                       | Use when `exam-question-layout: narrow`    | `.wide`               |
+| `{{begin-center}}` ... `{{end-center}}` | Center-align content                    | Wrap sections that should be centered      | `.center`             |
+| `{{sblank}}`                            | Small blank line                        | `{{sblank}}` → ___                         | n/a                   |
+| `{{lblank}}`                            | Large blank line                        | `{{lblank}}` → __________                  | n/a                   |
 
 ## Core Exam Features
 
@@ -128,8 +128,8 @@ exam-question-width:  3.27in  # Width of question column in narrow mode
 
 **Switching modes within your exam:**
 
-- When `exam-question-layout: wide` (default), use `{{begin-narrow}}...{{end-narrow}}` to create sections with answer space
-- When `exam-question-layout: narrow`, use `{{begin-wide}}...{{end-wide}}` to create full-width sections
+- When `exam-question-layout: wide` (default), use `{{begin-narrow}}...{{end-narrow}}` to create sections with answer space, or use Quarto fenced divs `::: {.narrow} ... :::`.
+- When `exam-question-layout: narrow`, use `{{begin-wide}}...{{end-wide}}` to create full-width sections, or use Quarto fenced divs `::: {.wide} ... :::`.
 
 **Example (using default wide mode with a narrow section):**
 
@@ -154,12 +154,17 @@ These questions have writing space on the right.
 1. {{pts:10}} Explain the concept of recursion.
 
 {{vf}}
+{{end-narrow}}
+
+Or with Quarto fenced divs:
+
+::: {.narrow}
 
 2. {{pts:20}} Describe three sorting algorithms.
 
 {{vf}}
 
-{{end-narrow}}
+:::
 ```
 
 ### Vertical Spacing
