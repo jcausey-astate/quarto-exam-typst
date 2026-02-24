@@ -1,8 +1,66 @@
 -- Auto-generate exam header from YAML metadata
--- Also provides shorthand syntax for common Typst exam functions
+-- Also provides shortcode syntax for common Typst exam functions
 
--- Default mapping of shorthand syntax to Typst code (when exam-question-layout is "wide" or unset)
-local shorthand_map = {
+-- Shared style maps (module-level, used by Span, Div, and related handlers)
+-- based on https://tex.stackexchange.com/a/24600
+local size_map = {
+  ["tiny"] = "0.5em",
+  ["scriptsize"] = "0.7em",
+  ["footnotesize"] = "0.8em",
+  ["small"] =  "0.9em",
+  ["normalsize"] = "1.0em",
+  ["large"] = "1.2em",
+  ["Large"] = "1.44em",
+  ["LARGE"] = "1.728em",
+  ["huge"] = "2.074em",
+  ["Huge"] = "2.488em",
+  ["HUGE"] = "2.728em", -- custom to our template
+}
+
+-- Relative sizes scale relative to inherited/current font size
+local relative_size_map = {
+  ["smaller"] = "0.85em",
+  ["larger"] = "1.2em",
+}
+
+local color_map = {
+  ["red"] = "red",
+  ["blue"] = "blue",
+  ["green"] = "green",
+  ["orange"] = "orange",
+  ["purple"] = "purple",
+  ["gray"] = "gray",
+  ["grey"] = "gray",
+}
+
+-- Pale background highlight colors
+local highlight_map = {
+  ["highlight"] = "rgb(255, 255, 200)",      -- pale yellow
+  ["highlight-yellow"] = "rgb(255, 255, 200)",
+  ["highlight-green"] = "rgb(200, 255, 200)",
+  ["highlight-blue"] = "rgb(200, 230, 255)",
+  ["highlight-pink"] = "rgb(255, 200, 230)",
+  ["highlight-orange"] = "rgb(255, 230, 200)",
+}
+
+local exambox_map = {
+  ["exambox"]        = {fill = "rgb(240, 245, 255)", stroke = "rgb(100, 150, 255)"},
+  ["exambox-blue"]   = {fill = "rgb(240, 245, 255)", stroke = "rgb(100, 150, 255)"},
+  ["exambox-green"]  = {fill = "rgb(240, 255, 240)", stroke = "rgb(100, 200, 100)"},
+  ["exambox-yellow"] = {fill = "rgb(255, 255, 230)", stroke = "rgb(200, 180, 0)"},
+  ["exambox-red"]    = {fill = "rgb(255, 240, 240)", stroke = "rgb(220, 100, 100)"},
+  ["exambox-orange"] = {fill = "rgb(255, 245, 230)", stroke = "rgb(220, 140, 60)"},
+  ["exambox-gray"]   = {fill = "rgb(245, 245, 245)", stroke = "rgb(150, 150, 150)"},
+}
+
+-- Answer styling: subtle light green background + darker green text
+local answer_style = {
+  bg = "rgb(245, 255, 245)",
+  fg = "rgb(50, 120, 50)",
+}
+
+-- Default mapping of shortcode syntax to Typst code (when exam-question-layout is "wide" or unset)
+local shortcode_map = {
   ["{{vf}}"] = "#vf()",
   ["{{sblank}}"] = "#sblank()",
   ["{{blank}}"] = "#blank()",
@@ -87,8 +145,8 @@ function Str(elem)
     else
       -- No more parameterized shortcodes, check for simple shortcodes
       local found = false
-      for shorthand, typst_code in pairs(shorthand_map) do
-        local sh_start, sh_end = text:find(shorthand, pos, true)
+      for shortcode, typst_code in pairs(shortcode_map) do
+        local sh_start, sh_end = text:find(shortcode, pos, true)
         if sh_start and sh_start == pos then
           -- Found a simple shortcode at current position
           table.insert(result, pandoc.RawInline("typst", typst_code))
@@ -118,8 +176,8 @@ function Str(elem)
         end
 
         -- Check for simple shortcodes
-        for shorthand, _ in pairs(shorthand_map) do
-          local sh_start = text:find(shorthand, pos, true)
+        for shortcode, _ in pairs(shortcode_map) do
+          local sh_start = text:find(shortcode, pos, true)
           if sh_start and sh_start < next_shortcode then
             next_shortcode = sh_start
           end
@@ -144,55 +202,6 @@ end
 function Span(elem)
   -- Check if span has classes
   if #elem.classes > 0 then
-    -- Map class names to Typst text sizes
-    -- based on https://tex.stackexchange.com/a/24600
-    local size_map = {
-      ["tiny"] = "0.5em",
-      ["scriptsize"] = "0.7em",
-      ["footnotesize"] = "0.8em",
-      ["small"] =  "0.9em",
-      ["normalsize"] = "1.0em",
-      ["large"] = "1.2em",
-      ["Large"] = "1.44em",
-      ["LARGE"] = "1.728em",
-      ["huge"] = "2.074em",
-      ["Huge"] = "2.488em",
-      ["HUGE"] = "2.728em", -- custom to our template
-    }
-
-    -- Map class names to relative Typst text sizes (em units scale relative to inherited size)
-    local relative_size_map = {
-      ["smaller"] = "0.85em",
-      ["larger"] = "1.2em",
-    }
-
-    -- Map class names to Typst colors
-    local color_map = {
-      ["red"] = "red",
-      ["blue"] = "blue",
-      ["green"] = "green",
-      ["orange"] = "orange",
-      ["purple"] = "purple",
-      ["gray"] = "gray",
-      ["grey"] = "gray",
-    }
-
-    -- Map class names to highlight colors (pale backgrounds)
-    local highlight_map = {
-      ["highlight"] = "rgb(255, 255, 200)",      -- pale yellow
-      ["highlight-yellow"] = "rgb(255, 255, 200)",
-      ["highlight-green"] = "rgb(200, 255, 200)",
-      ["highlight-blue"] = "rgb(200, 230, 255)",
-      ["highlight-pink"] = "rgb(255, 200, 230)",
-      ["highlight-orange"] = "rgb(255, 230, 200)",
-    }
-
-    -- Answer styling (subtle background + text color)
-    local answer_style = {
-      bg = "rgb(245, 255, 245)",  -- very subtle light green background
-      fg = "rgb(50, 120, 50)"     -- darker green text
-    }
-
     -- Collect all styling attributes
     local size = nil
     local color = nil
@@ -292,24 +301,6 @@ function Div(elem)
   end
   if is_column then
     -- Check for size/color/relative-size classes and inject wrapping into content
-    local size_map = {
-      ["tiny"] = "0.5em",
-      ["scriptsize"] = "0.7em",
-      ["footnotesize"] = "0.8em",
-      ["small"] =  "0.9em",
-      ["normalsize"] = "1.0em",
-      ["large"] = "1.2em",
-      ["Large"] = "1.44em",
-      ["LARGE"] = "1.728em",
-      ["huge"] = "2.074em",
-      ["Huge"] = "2.488em",
-      ["HUGE"] = "2.728em", -- custom to our template
-    }
-    local relative_size_map = { ["smaller"] = "0.85em", ["larger"] = "1.2em" }
-    local color_map = {
-      ["red"] = "red", ["blue"] = "blue", ["green"] = "green",
-      ["orange"] = "orange", ["purple"] = "purple", ["gray"] = "gray", ["grey"] = "gray",
-    }
     local size, color, relative_size = nil, nil, nil
     for _, class in ipairs(elem.classes) do
       if size_map[class] then size = size_map[class]
@@ -362,53 +353,19 @@ function Div(elem)
       -- Collect any extra formatting classes (other than "columns") so they can be
       -- applied as an outer wrapper around the grid, as if the .columns div were
       -- nested inside a separate div carrying those classes.
-      local col_size_map = {
-        ["tiny"] = "0.5em",
-        ["scriptsize"] = "0.7em",
-        ["footnotesize"] = "0.8em",
-        ["small"] =  "0.9em",
-        ["normalsize"] = "1.0em",
-        ["large"] = "1.2em",
-        ["Large"] = "1.44em",
-        ["LARGE"] = "1.728em",
-        ["huge"] = "2.074em",
-        ["Huge"] = "2.488em",
-        ["HUGE"] = "2.728em", -- custom to our template
-      }
-      local col_relative_size_map = { ["smaller"] = "0.85em", ["larger"] = "1.2em" }
-      local col_color_map = {
-        ["red"] = "red", ["blue"] = "blue", ["green"] = "green",
-        ["orange"] = "orange", ["purple"] = "purple", ["gray"] = "gray", ["grey"] = "gray",
-      }
-      local col_highlight_map = {
-        ["highlight"] = "rgb(255, 255, 200)", ["highlight-yellow"] = "rgb(255, 255, 200)",
-        ["highlight-green"] = "rgb(200, 255, 200)", ["highlight-blue"] = "rgb(200, 230, 255)",
-        ["highlight-pink"] = "rgb(255, 200, 230)", ["highlight-orange"] = "rgb(255, 230, 200)",
-      }
-      local col_exambox_map = {
-        ["exambox"]        = {fill = "rgb(240, 245, 255)", stroke = "rgb(100, 150, 255)"},
-        ["exambox-blue"]   = {fill = "rgb(240, 245, 255)", stroke = "rgb(100, 150, 255)"},
-        ["exambox-green"]  = {fill = "rgb(240, 255, 240)", stroke = "rgb(100, 200, 100)"},
-        ["exambox-yellow"] = {fill = "rgb(255, 255, 230)", stroke = "rgb(200, 180, 0)"},
-        ["exambox-red"]    = {fill = "rgb(255, 240, 240)", stroke = "rgb(220, 100, 100)"},
-        ["exambox-orange"] = {fill = "rgb(255, 245, 230)", stroke = "rgb(220, 140, 60)"},
-        ["exambox-gray"]   = {fill = "rgb(245, 245, 245)", stroke = "rgb(150, 150, 150)"},
-      }
-      local col_answer_style = { bg = "rgb(245, 255, 245)", fg = "rgb(50, 120, 50)" }
-
       local extra_size, extra_color, extra_highlight, extra_exambox = nil, nil, nil, nil
       local extra_is_answer, extra_relative_size, extra_explicit_width = false, nil, nil
 
       for _, cls in ipairs(elem.classes) do
         if cls ~= "columns" then
-          if col_size_map[cls] then extra_size = col_size_map[cls]
-          elseif col_color_map[cls] then extra_color = col_color_map[cls]
-          elseif col_highlight_map[cls] then extra_highlight = col_highlight_map[cls]
-          elseif col_exambox_map[cls] then extra_exambox = col_exambox_map[cls]
+          if size_map[cls] then extra_size = size_map[cls]
+          elseif color_map[cls] then extra_color = color_map[cls]
+          elseif highlight_map[cls] then extra_highlight = highlight_map[cls]
+          elseif exambox_map[cls] then extra_exambox = exambox_map[cls]
           elseif cls == "answer" then extra_is_answer = true
           elseif cls == "wide" then extra_explicit_width = "100%"
           elseif cls == "narrow" then extra_explicit_width = "narrow"
-          elseif col_relative_size_map[cls] then extra_relative_size = col_relative_size_map[cls]
+          elseif relative_size_map[cls] then extra_relative_size = relative_size_map[cls]
           end
         end
       end
@@ -434,7 +391,7 @@ function Div(elem)
         if extra_is_answer and not extra_exambox then
           local w = needs_context and "_w" or width_expr
           table.insert(open_parts, string.format(
-            "block(fill: %s, inset: 8pt, radius: 3pt, width: %s)[\n", col_answer_style.bg, w))
+            "block(fill: %s, inset: 8pt, radius: 3pt, width: %s)[\n", answer_style.bg, w))
           table.insert(close_parts, 1, "]")
         end
         if extra_highlight and not extra_exambox and not extra_is_answer then
@@ -452,7 +409,7 @@ function Div(elem)
         if extra_color then
           table.insert(params, string.format("fill: %s", extra_color))
         elseif extra_is_answer then
-          table.insert(params, string.format("fill: %s", col_answer_style.fg))
+          table.insert(params, string.format("fill: %s", answer_style.fg))
         end
         if #params > 0 then
           table.insert(open_parts, "#block[\n")
@@ -487,65 +444,6 @@ function Div(elem)
 
   -- Check if div has classes
   if #elem.classes > 0 then
-    -- Map class names to Typst text sizes
-    local size_map = {
-      ["tiny"] = "0.5em",
-      ["scriptsize"] = "0.7em",
-      ["footnotesize"] = "0.8em",
-      ["small"] =  "0.9em",
-      ["normalsize"] = "1.0em",
-      ["large"] = "1.2em",
-      ["Large"] = "1.44em",
-      ["LARGE"] = "1.728em",
-      ["huge"] = "2.074em",
-      ["Huge"] = "2.488em",
-      ["HUGE"] = "2.728em", -- custom to our template
-    }
-
-    -- Map class names to relative Typst text sizes (em units scale relative to inherited size)
-    local relative_size_map = {
-      ["smaller"] = "0.85em",
-      ["larger"] = "1.2em",
-    }
-
-    -- Map class names to Typst colors
-    local color_map = {
-      ["red"] = "red",
-      ["blue"] = "blue",
-      ["green"] = "green",
-      ["orange"] = "orange",
-      ["purple"] = "purple",
-      ["gray"] = "gray",
-      ["grey"] = "gray",
-    }
-
-    -- Map class names to highlight colors (pale backgrounds)
-    local highlight_map = {
-      ["highlight"] = "rgb(255, 255, 200)",      -- pale yellow
-      ["highlight-yellow"] = "rgb(255, 255, 200)",
-      ["highlight-green"] = "rgb(200, 255, 200)",
-      ["highlight-blue"] = "rgb(200, 230, 255)",
-      ["highlight-pink"] = "rgb(255, 200, 230)",
-      ["highlight-orange"] = "rgb(255, 230, 200)",
-    }
-
-    -- Map exambox classes with their styling
-    local exambox_map = {
-      ["exambox"] = {fill = "rgb(240, 245, 255)", stroke = "rgb(100, 150, 255)"},
-      ["exambox-blue"] = {fill = "rgb(240, 245, 255)", stroke = "rgb(100, 150, 255)"},
-      ["exambox-green"] = {fill = "rgb(240, 255, 240)", stroke = "rgb(100, 200, 100)"},
-      ["exambox-yellow"] = {fill = "rgb(255, 255, 230)", stroke = "rgb(200, 180, 0)"},
-      ["exambox-red"] = {fill = "rgb(255, 240, 240)", stroke = "rgb(220, 100, 100)"},
-      ["exambox-orange"] = {fill = "rgb(255, 245, 230)", stroke = "rgb(220, 140, 60)"},
-      ["exambox-gray"] = {fill = "rgb(245, 245, 245)", stroke = "rgb(150, 150, 150)"},
-    }
-
-    -- Answer styling (subtle background + text color)
-    local answer_style = {
-      bg = "rgb(245, 255, 245)",  -- very subtle light green background
-      fg = "rgb(50, 120, 50)"     -- darker green text
-    }
-
     -- Collect all styling attributes
     local size = nil
     local color = nil
@@ -719,21 +617,21 @@ function CodeBlock(elem)
   return pandoc.RawBlock("typst", typst_raw)
 end
 
--- Process Para elements to handle shorthands in paragraph context
+-- Process Para elements to handle shortcodes in paragraph context
 function Para(elem)
   -- Check if this paragraph contains only a layout shortcode
   if #elem.content == 1 and elem.content[1].t == "Str" then
     local text = elem.content[1].text
     -- Check for layout shortcodes that should be RawBlocks
-    for shorthand, typst_code in pairs(shorthand_map) do
-      if text == shorthand and (
-        shorthand == "{{begin-narrow}}" or
-        shorthand == "{{end-narrow}}" or
-        shorthand == "{{begin-wide}}" or
-        shorthand == "{{end-wide}}" or
-        shorthand == "{{begin-center}}" or
-        shorthand == "{{end-center}}" or
-        shorthand == "{{vf}}"
+    for shortcode, typst_code in pairs(shortcode_map) do
+      if text == shortcode and (
+        shortcode == "{{begin-narrow}}" or
+        shortcode == "{{end-narrow}}" or
+        shortcode == "{{begin-wide}}" or
+        shortcode == "{{end-wide}}" or
+        shortcode == "{{begin-center}}" or
+        shortcode == "{{end-center}}" or
+        shortcode == "{{vf}}"
       ) then
         -- Convert to RawBlock instead of keeping as Para
         return pandoc.RawBlock("typst", typst_code)
