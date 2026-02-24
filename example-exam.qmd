@@ -12,7 +12,8 @@ format:
 
 ## Part 1: Multiple Choice {{pts:24}}
 
-Choose the best answer for each question. {{ptseach:4}}
+Choose the best answer for each question. {{ptseach:4}}\
+[_Write any assumptions you make in the margin._]{.footnotesize}
 
 1. What is the worst-case time complexity of searching in a balanced binary search tree?
 
