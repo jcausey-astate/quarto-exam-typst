@@ -398,8 +398,6 @@ Answer blocks preserve the structure of lists, code blocks, and other formatting
 
 **Automatic Width Adaptation:** Answer blocks automatically adapt their width to the current layout context. In narrow sections (or when `exam-question-layout: narrow`), they use the width specified by `exam-question-width`. In wide sections, they use full width. Use `.wide` or `.narrow` classes to override this behavior.
 
-You can easily extend the Lua filter in `_extensions/exam/_filters/exam-auto-header.lua` to add more custom styling options.
-
 ## Advanced: Direct Typst Syntax
 
 If you prefer explicit Typst syntax over shortcodes, you can use the backtick-wrapped format:
@@ -477,7 +475,7 @@ The extension makes use of the following files, each of which can be customized 
 - `_extensions/exam/typst-template.typ` - Helper functions for exams (points, blanks, vertical fill)
 - `_extensions/exam/typst-show.typ` - Document formatting (no page numbers, heading styles)
 - `_extensions/exam/exam-header.typ` - Exam header generator (title, subtitle, name field, instructions)
-- `_extensions/exam/_filters/exam-auto-header.lua` - Lua filter that auto-generates exam header from YAML metadata
+- `_extensions/exam/_filters/exam-format-filter.lua` - Lua filter that auto-generates exam header and processes shortcodes, etc.
 - `example-exam.qmd` - Example exam demonstrating common features
 
 

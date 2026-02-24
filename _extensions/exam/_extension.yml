@@ -11,5 +11,5 @@ contributes:
           y: 2cm
       template: exam-template.typ
       filters:
-        - _filters/exam-auto-header.lua
+        - _filters/exam-format-filter.lua
       keep-typ: false
