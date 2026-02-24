@@ -64,6 +64,7 @@ Common shortcodes you'll use most often:
 | `{{vs:N}}` | Fixed vertical space (any Typst length) | `{{vs:1in}}`, `{{vs:2cm}}`, `{{vs:0.5em}}` |
 | `{{begin-narrow}}` ... `{{end-narrow}}` | Narrow layout for handwritten answers | Wrap sections needing answer space |
 | `{{begin-wide}}` ... `{{end-wide}}` | Full-width layout | Use when `exam-question-layout: narrow` |
+| `{{begin-center}}` ... `{{end-center}}` | Center-align content | Wrap sections that should be centered |
 | `{{sblank}}` | Small blank line | `{{sblank}}` → ___ |
 | `{{lblank}}` | Large blank line | `{{lblank}}` → __________ |
 
@@ -263,6 +264,30 @@ You can combine multiple classes in any order to apply multiple styling effects:
 - Nested relative (stacking): `[outer [inner]{.smaller}]{.smaller}`
 
 The order doesn't matter - `[text]{.red .large}` and `[text]{.large .red}` produce the same result.
+
+**Text Alignment:**
+
+- `.center` - Centers all content horizontally within the block (div only)
+
+```markdown
+::: {.center}
+This entire paragraph will be centered.
+
+Lists, headings, and other content are centered too.
+:::
+```
+
+Can be combined with other classes, including `.wide` to center across the full page width in narrow-mode documents:
+
+```markdown
+::: {.center .large}
+All of this is large and centered.
+:::
+
+::: {.wide .center}
+This is centered at full page width, even in narrow layout mode.
+:::
+```
 
 **Layout Width Classes:**
 

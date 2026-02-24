@@ -12,6 +12,8 @@ local shorthand_map = {
   ["{{end-narrow}}"] = "#exam-question-layout-state.update(\"wide\")",
   ["{{begin-wide}}"] = "#force-wide-state.update(true)",
   ["{{end-wide}}"] = "#force-wide-state.update(false)",
+  ["{{begin-center}}"] = "#align(center)[",
+  ["{{end-center}}"] = "]",
 }
 
 -- Helper function to generate dynamic width code that respects layout context
@@ -552,6 +554,7 @@ function Div(elem)
     local is_answer = false
     local relative_size = nil
     local explicit_width = nil  -- for .wide and .narrow classes
+    local is_center = false
 
     for _, class in ipairs(elem.classes) do
       if size_map[class] then
@@ -570,12 +573,14 @@ function Div(elem)
         explicit_width = "narrow"  -- marker for get_width_info to use narrow width
       elseif relative_size_map[class] then
         relative_size = relative_size_map[class]
+      elseif class == "center" then
+        is_center = true
       end
     end
 
     -- Build the Typst code with combined styling
     -- Use #set text() to preserve structure of lists, code blocks, etc.
-    if size or color or highlight or exambox or is_answer or relative_size or explicit_width then
+    if size or color or highlight or exambox or is_answer or relative_size or explicit_width or is_center then
       local result = {}
       local open_parts = {}
       local close_parts = {}
@@ -633,6 +638,13 @@ function Div(elem)
       if highlight and not exambox and not is_answer then
         local width_val = needs_context and "_w" or width_expr
         table.insert(open_parts, string.format("box(fill: %s, inset: 8pt, radius: 4pt, width: %s)[\n", highlight, width_val))
+        table.insert(close_parts, 1, "]")
+      end
+
+      -- Apply center alignment as an outer #align() wrapper so it takes effect even
+      -- when show rules (par, heading, etc.) have already constrained the content width.
+      if is_center then
+        table.insert(open_parts, "#align(center)[\n")
         table.insert(close_parts, 1, "]")
       end
 
@@ -719,6 +731,8 @@ function Para(elem)
         shorthand == "{{end-narrow}}" or
         shorthand == "{{begin-wide}}" or
         shorthand == "{{end-wide}}" or
+        shorthand == "{{begin-center}}" or
+        shorthand == "{{end-center}}" or
         shorthand == "{{vf}}"
       ) then
         -- Convert to RawBlock instead of keeping as Para
