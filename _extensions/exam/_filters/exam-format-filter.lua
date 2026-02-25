@@ -56,7 +56,7 @@ local exambox_map = {
 -- Answer styling: subtle light green background + darker green text
 local answer_style = {
   bg = "rgb(245, 255, 245)",
-  fg = "rgb(50, 120, 50)",
+  fg = "rgb(0, 100, 0)", -- corresponds to "darkgreen" in CSS
 }
 
 -- Default mapping of shortcode syntax to Typst code (when exam-question-layout is "wide" or unset)
