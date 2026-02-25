@@ -272,6 +272,24 @@ You can combine multiple classes in any order to apply multiple styling effects:
 
 The order doesn't matter - `[text]{.red .large}` and `[text]{.large .red}` produce the same result.
 
+**Indentation:**
+
+- `.indent` - Adds one level of left indentation (1.5em) to all content in the block. Nesting is supported.
+
+```markdown
+::: {.indent}
+This content is indented one level.
+
+::: {.indent}
+This content is indented two levels.
+
+::: {.indent}
+Three levels deep.
+:::
+:::
+:::
+```
+
 **Text Alignment:**
 
 - `.center` - Centers all content horizontally within the block (div only)

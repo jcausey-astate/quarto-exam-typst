@@ -453,6 +453,7 @@ function Div(elem)
     local relative_size = nil
     local explicit_width = nil  -- for .wide and .narrow classes
     local is_center = false
+    local is_indent = false
 
     for _, class in ipairs(elem.classes) do
       if size_map[class] then
@@ -473,12 +474,14 @@ function Div(elem)
         relative_size = relative_size_map[class]
       elseif class == "center" then
         is_center = true
+      elseif class == "indent" then
+        is_indent = true
       end
     end
 
     -- Build the Typst code with combined styling
     -- Use #set text() to preserve structure of lists, code blocks, etc.
-    if size or color or highlight or exambox or is_answer or relative_size or explicit_width or is_center then
+    if size or color or highlight or exambox or is_answer or relative_size or explicit_width or is_center or is_indent then
       local result = {}
       local open_parts = {}
       local close_parts = {}
@@ -566,6 +569,13 @@ function Div(elem)
           table.insert(open_parts, string.format("#set text(%s)\n", table.concat(params, ", ")))
           table.insert(close_parts, 1, "]")
         end
+      end
+
+      -- .indent is the outermost wrapper: prepend to open_parts and append to close_parts
+      -- so it surrounds everything else (wide/narrow state updates, context blocks, etc.)
+      if is_indent then
+        table.insert(open_parts, 1, "#pad(left: 1.5em)[\n")
+        table.insert(close_parts, "]")
       end
 
       -- Build result: opening code + original content + closing code
