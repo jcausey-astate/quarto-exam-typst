@@ -379,25 +379,30 @@ function Div(elem)
 
         if needs_context and (extra_exambox or extra_is_answer or extra_highlight) then
           table.insert(open_parts, string.format("#context { let _w = %s;\n", width_expr))
-          table.insert(close_parts, "}")
+          -- Insert at position 1 so any inner wrapper closes precede `}` but
+          -- any outer wrapper (e.g. a .narrow markup `[...]`) closes after.
+          table.insert(close_parts, 1, "}")
         end
+        -- Inside #context {...} we're in code mode (no `#` needed); otherwise we
+        -- must prefix function calls with `#` so Typst evaluates them.
+        local call_prefix = needs_context and "" or "#"
         if extra_exambox then
           local w = needs_context and "_w" or width_expr
           table.insert(open_parts, string.format(
-            "block(fill: %s, stroke: (left: 3pt + %s, rest: 0.5pt + %s), radius: (top-right: 6pt, bottom-right: 6pt, rest: 0pt), inset: 10pt, width: %s)[\n",
-            extra_exambox.fill, extra_exambox.stroke, extra_exambox.stroke, w))
+            "%sblock(fill: %s, stroke: (left: 3pt + %s, rest: 0.5pt + %s), radius: (top-right: 6pt, bottom-right: 6pt, rest: 0pt), inset: 10pt, width: %s)[\n",
+            call_prefix, extra_exambox.fill, extra_exambox.stroke, extra_exambox.stroke, w))
           table.insert(close_parts, 1, "]")
         end
         if extra_is_answer and not extra_exambox then
           local w = needs_context and "_w" or width_expr
           table.insert(open_parts, string.format(
-            "block(fill: %s, inset: 8pt, radius: 3pt, width: %s)[\n", answer_style.bg, w))
+            "%sblock(fill: %s, inset: 8pt, radius: 3pt, width: %s)[\n", call_prefix, answer_style.bg, w))
           table.insert(close_parts, 1, "]")
         end
         if extra_highlight and not extra_exambox and not extra_is_answer then
           local w = needs_context and "_w" or width_expr
           table.insert(open_parts, string.format(
-            "box(fill: %s, inset: 8pt, radius: 4pt, width: %s)[\n", extra_highlight, w))
+            "%sbox(fill: %s, inset: 8pt, radius: 4pt, width: %s)[\n", call_prefix, extra_highlight, w))
           table.insert(close_parts, 1, "]")
         end
         local params = {}
@@ -513,16 +518,22 @@ function Div(elem)
       -- If we need context, wrap in context block and compute width
       if needs_context and (exambox or is_answer or highlight) then
         table.insert(open_parts, string.format("#context { let _w = %s;\n", width_expr))
-        table.insert(close_parts, "}")
+        -- Insert at position 1 so any inner wrapper closes precede `}` but
+        -- any outer wrapper (e.g. a .narrow markup `[...]`) closes after.
+        table.insert(close_parts, 1, "}")
       end
+
+      -- Inside #context {...} we're in code mode (no `#` needed); otherwise we
+      -- must prefix function calls with `#` so Typst evaluates them.
+      local call_prefix = needs_context and "" or "#"
 
       -- Apply exambox as outer wrapper if needed
       if exambox then
         -- Exambox with rounded right corners, square left, thicker left edge
         local width_val = needs_context and "_w" or width_expr
         local exambox_code = string.format(
-          "block(fill: %s, stroke: (left: 3pt + %s, rest: 0.5pt + %s), radius: (top-right: 6pt, bottom-right: 6pt, rest: 0pt), inset: 10pt, width: %s)[\n",
-          exambox.fill, exambox.stroke, exambox.stroke, width_val
+          "%sblock(fill: %s, stroke: (left: 3pt + %s, rest: 0.5pt + %s), radius: (top-right: 6pt, bottom-right: 6pt, rest: 0pt), inset: 10pt, width: %s)[\n",
+          call_prefix, exambox.fill, exambox.stroke, exambox.stroke, width_val
         )
         table.insert(open_parts, exambox_code)
         table.insert(close_parts, 1, "]")
@@ -531,14 +542,14 @@ function Div(elem)
       -- Apply answer styling as wrapper if needed (and not already in exambox)
       if is_answer and not exambox then
         local width_val = needs_context and "_w" or width_expr
-        table.insert(open_parts, string.format("block(fill: %s, inset: 8pt, radius: 3pt, width: %s)[\n", answer_style.bg, width_val))
+        table.insert(open_parts, string.format("%sblock(fill: %s, inset: 8pt, radius: 3pt, width: %s)[\n", call_prefix, answer_style.bg, width_val))
         table.insert(close_parts, 1, "]")
       end
 
       -- Apply highlight (box) as wrapper if needed (and not already in exambox or answer)
       if highlight and not exambox and not is_answer then
         local width_val = needs_context and "_w" or width_expr
-        table.insert(open_parts, string.format("box(fill: %s, inset: 8pt, radius: 4pt, width: %s)[\n", highlight, width_val))
+        table.insert(open_parts, string.format("%sbox(fill: %s, inset: 8pt, radius: 4pt, width: %s)[\n", call_prefix, highlight, width_val))
         table.insert(close_parts, 1, "]")
       end
 
