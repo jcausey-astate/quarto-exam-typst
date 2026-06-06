@@ -244,9 +244,14 @@
           // Use numbering function to format items properly
           for (idx, item) in items.enumerate() {
             let item_num = start_num + idx
-            // Format using the original numbering style
             let formatted_num = numbering(it.numbering, item_num)
-            [#formatted_num #item.body]
+            grid(
+              columns: (auto, 1fr),
+              column-gutter: 0.3em,
+              row-gutter: 0pt,
+              align(left + top, [#formatted_num]),
+              [#item.body],
+            )
 
             // Add flexible spacing after each item so questions auto-distribute on the page.
             // For multi-item enums: add after all items including the last
@@ -254,8 +259,8 @@
             // {{vf}} inside an item body adds additional v(1fr) weight, giving that question
             // proportionally more space than neighbours without an explicit {{vf}}.
             if (num_items > 1) or (idx < num_items - 1) {
-              v(1em, weak: true)  // Minimum gap (collapses if adjacent spacing is larger)
-              v(1fr)              // Auto-distribute: fill remaining space evenly between items
+              v(0.5in)  // Minimum gap (always present, even on crowded pages)
+              v(1fr)    // Auto-distribute: fill remaining space evenly between items
             }
           }
         })
