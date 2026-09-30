@@ -4,11 +4,10 @@ author: "Jason L Causey"
 contributes:
   formats:
     typst:
-      layout:
-        papersize: us-letter
-        margin:
-          x: 2cm
-          y: 2cm
+      papersize: us-letter
+      margin:
+        x: 2cm
+        y: 2cm
       template: exam-template.typ
       filters:
         - _filters/exam-format-filter.lua
